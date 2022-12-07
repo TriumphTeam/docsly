@@ -3,6 +3,10 @@ plugins {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21")
-    implementation("gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.16.1")
+    // Hack to allow version catalog inside convention plugins
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+
+    implementation(libs.build.kotlin)
+    implementation(libs.build.serialization)
+    implementation(libs.build.license)
 }

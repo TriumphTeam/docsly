@@ -1,9 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URI
-
 plugins {
     id("doclopedia.base-conventions")
-    kotlin("plugin.serialization") version "1.7.20"
     id("org.jetbrains.dokka") version "1.7.20"
 }
 
@@ -12,8 +8,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(libs.kotlinx.json)
     implementation(libs.dokka.base)
 
     compileOnly(libs.dokka.core)

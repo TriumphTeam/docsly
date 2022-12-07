@@ -9,6 +9,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 listOf(
     "dokka-plugin",
+    "common",
 ).forEach(::includeProject)
 
 include("test-module")

@@ -1,12 +1,22 @@
+import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// Hack which exposes `libs` to this convention plugin
+val libs = the<LibrariesForLibs>()
+
 plugins {
-    id("com.github.hierynomus.license")
     kotlin("jvm")
+    kotlin("plugin.serialization")
+    id("com.github.hierynomus.license")
 }
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    implementation(kotlin("stdlib"))
+    implementation(libs.kotlinx.json)
 }
 
 license {
