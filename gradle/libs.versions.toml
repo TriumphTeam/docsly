@@ -1,0 +1,14 @@
+[versions]
+kotlinx-json = "1.4.1"
+
+dokka = "1.7.20"
+
+[libraries]
+kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json"}
+
+dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
+dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
+
+# Testing
+dokka-api-test = { module = "org.jetbrains.dokka:dokka-test-api", version.ref = "dokka" }
+dokka-base-test = { module = "org.jetbrains.dokka:dokka-base-test-utils", version.ref = "dokka" }

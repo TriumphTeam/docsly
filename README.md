@@ -74,7 +74,7 @@ We highly encourage for you to extend tests classes with `BaseAbstractTest()` wh
 in your tests without a need to provide external files.
 This way the tests are much cleaner and easier to reason about.
 
-This repository contains most basic example of a [test using this mechanism](src/test/kotlin/template/MyAwesomePluginTest.kt).
+This repository contains most basic example of a [test using this mechanism](dokka-plugin/src/test/kotlin/template/MyAwesomePluginTest.kt).
 
 ### Debugging
 
