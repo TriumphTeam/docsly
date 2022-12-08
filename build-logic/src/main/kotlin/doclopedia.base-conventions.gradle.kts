@@ -17,6 +17,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(libs.kotlinx.json)
+    implementation(libs.kotlinx.coroutines)
 }
 
 license {

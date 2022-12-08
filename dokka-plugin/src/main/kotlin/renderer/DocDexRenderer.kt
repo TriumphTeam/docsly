@@ -1,7 +1,36 @@
 package dev.triumphteam.doclopedia.renderer
 
+import dev.triumphteam.doclopedia.ClassType
+import dev.triumphteam.doclopedia.Function
+import dev.triumphteam.doclopedia.StarType
+import dev.triumphteam.doclopedia.Type
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.dokka.base.renderers.sourceSets
+import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
+import org.jetbrains.dokka.links.DriOfUnit
+import org.jetbrains.dokka.model.Bound
+import org.jetbrains.dokka.model.Contravariance
+import org.jetbrains.dokka.model.Covariance
+import org.jetbrains.dokka.model.DClasslike
+import org.jetbrains.dokka.model.DFunction
+import org.jetbrains.dokka.model.DefinitelyNonNullable
+import org.jetbrains.dokka.model.Dynamic
+import org.jetbrains.dokka.model.GenericTypeConstructor
+import org.jetbrains.dokka.model.Invariance
+import org.jetbrains.dokka.model.JavaObject
+import org.jetbrains.dokka.model.Nullable
+import org.jetbrains.dokka.model.PrimitiveJavaType
+import org.jetbrains.dokka.model.Projection
+import org.jetbrains.dokka.model.Star
+import org.jetbrains.dokka.model.TypeAliased
+import org.jetbrains.dokka.model.TypeConstructor
+import org.jetbrains.dokka.model.TypeParameter
+import org.jetbrains.dokka.model.UnresolvedBound
+import org.jetbrains.dokka.model.Void
 import org.jetbrains.dokka.pages.ClasslikePageNode
-import org.jetbrains.dokka.pages.ContentNode
 import org.jetbrains.dokka.pages.MemberPageNode
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
@@ -13,34 +42,142 @@ import org.jetbrains.dokka.renderers.Renderer
 class DocDexRenderer(context: DokkaContext) : Renderer {
 
     override fun render(root: RootPageNode) {
-        collectRecursive(root)
+        runBlocking(Dispatchers.Default) {
+            renderModule(root)
+        }
+    }
+
+    private suspend fun renderModule(root: PageNode) {
+        if (root !is ModulePageNode) return
+
+        coroutineScope {
+            root.children.filterIsInstance<PackagePageNode>().forEach { packagePageNode ->
+                packagePageNode.children.forEach {
+                    if (it is MemberPageNode) launch { render(it) }
+                    if (it is ClasslikePageNode) launch { render(it) }
+                }
+            }
+        }
+    }
+
+    private fun render(node: MemberPageNode) {
+        println("Rendering a top level function -> ${node.name}")
+    }
+
+    private fun render(node: ClasslikePageNode) {
+        println("Collecting for class -> ${node.name}")
+
+        node.children.filterIsInstance<MemberPageNode>().forEach { member ->
+            val documentable = member.documentables.firstOrNull() ?: return@forEach
+
+            when (documentable) {
+                is DFunction -> renderFunction(documentable)
+            }
+        }
+    }
+
+    private fun renderFunction(function: DFunction) {
+        val annotations = function
+            .annotations()
+            .values
+            .flatten()
+            .map { "@${it.dri.classNames}" }
+
+        println(function.returnType())
+        /*when (type) {
+            is GenericTypeConstructor -> type
+        }*/
+
+        function.parameters.forEach { parameter ->
+            println("Type for ${parameter.name} is -> ${parameter.type.serialType}")
+        }
+
+        Function(
+            link = "temp",
+            name = function.name,
+            annotations = annotations
+        )
     }
 
     fun collectRecursive(node: PageNode) {
         when {
             node is ModulePageNode -> node.children.forEach(::collectRecursive)
             node is ClasslikePageNode -> {
-                println("rendering class -> ${node.name}")
-                node.children.filterIsInstance<MemberPageNode>().forEach { funs ->
-                    println("    this is a fun -> ${funs.name}")
-                    funs.content.children.forEach {
-                        test(it, 8)
+                println("Doing thingies for class -> ${node.name}")
+                node.children.filterIsInstance<MemberPageNode>().forEach { member ->
+                    val documentable = member.documentables.firstOrNull() ?: return@forEach
+
+                    when (documentable) {
+                        is DFunction -> {
+                            val annotations = documentable
+                                .annotations()
+                                .values
+                                .flatten()
+                                .map { "@${it.dri.classNames}" }
+
+                            member.sourceSets().forEach { set ->
+                                println("please -> ${set.name}")
+                            }
+                            documentable.parameters.forEach { }
+
+                            Function(
+                                link = "temp",
+                                name = documentable.name,
+                                annotations = annotations
+                            )
+                        }
+
+                        else -> {}
+                    }
+                }
+
+                node.documentables.filterIsInstance<DClasslike>().forEach { doc ->
+                    doc.functions.forEach { function ->
                     }
                 }
             }
 
             node is PackagePageNode -> node.children.forEach(::collectRecursive)
-        }
-    }
 
-    fun test(content: ContentNode, indentationSize: Int) {
-        println("${" ".repeat(indentationSize)} $content")
-        if (content.children.isEmpty()) {
-            return
-        }
-
-        content.children.forEach {
-            test(it, indentationSize + 4)
         }
     }
 }
+
+private fun DFunction.returnType(): Type? = when {
+    isConstructor -> null
+    type is TypeConstructor && (type as TypeConstructor).dri == DriOfUnit -> null
+    type is Void -> null
+    else -> type.serialType
+}
+
+private val Bound.serialType: Type?
+    get() {
+        return when (this) {
+            is GenericTypeConstructor -> {
+                val type = dri.classNames ?: return null
+                val params = projections.mapNotNull { it.serialType }
+                ClassType(type, params)
+            }
+            is TypeConstructor -> dri.classNames?.let { ClassType(it) }
+            is DefinitelyNonNullable -> TODO()
+            Dynamic -> TODO()
+            is JavaObject -> TODO()
+            is Nullable -> null
+            is PrimitiveJavaType -> TODO()
+            is TypeAliased -> TODO()
+            is TypeParameter -> TODO()
+            is UnresolvedBound -> TODO()
+            Void -> null
+        }
+    }
+
+private val Projection.serialType: Type?
+    get() {
+        return when (this) {
+            is Contravariance<*> -> inner.serialType
+            is Covariance<*> -> inner.serialType
+            is Invariance<*> -> inner.serialType
+            Star -> StarType
+            else -> null
+        }
+    }

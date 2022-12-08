@@ -66,5 +66,13 @@ data class Property(
 data class Function(
     override val link: String,
     val name: String,
-    // TODO
+    val annotations: List<String> = emptyList(),
 ) : Member
+
+@Serializable
+sealed interface Type
+
+@Serializable
+data class ClassType(val type: String, val parameters: List<Type> = emptyList()) : Type
+
+object StarType : Type

@@ -8,6 +8,7 @@ repositories {
 }
 
 dependencies {
+    implementation(projects.doclopediaCommon)
     implementation(libs.dokka.base)
 
     compileOnly(libs.dokka.core)
