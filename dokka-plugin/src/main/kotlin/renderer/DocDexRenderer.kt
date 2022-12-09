@@ -2,6 +2,7 @@ package dev.triumphteam.doclopedia.renderer
 
 import dev.triumphteam.doclopedia.ClassType
 import dev.triumphteam.doclopedia.Function
+import dev.triumphteam.doclopedia.GenericProjection
 import dev.triumphteam.doclopedia.StarType
 import dev.triumphteam.doclopedia.Type
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +12,6 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.dokka.base.renderers.sourceSets
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.links.DriOfUnit
-import org.jetbrains.dokka.model.Bound
 import org.jetbrains.dokka.model.Contravariance
 import org.jetbrains.dokka.model.Covariance
 import org.jetbrains.dokka.model.DClasslike
@@ -89,7 +89,7 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
         }*/
 
         function.parameters.forEach { parameter ->
-            println("Type for ${parameter.name} is -> ${parameter.type.serialType}")
+            println("Type for ${parameter.name} is -> ${parameter.type.getSerialType()} -> ${parameter.type::class.java}")
         }
 
         Function(
@@ -147,37 +147,34 @@ private fun DFunction.returnType(): Type? = when {
     isConstructor -> null
     type is TypeConstructor && (type as TypeConstructor).dri == DriOfUnit -> null
     type is Void -> null
-    else -> type.serialType
+    else -> type.getSerialType()
 }
 
-private val Bound.serialType: Type?
-    get() {
-        return when (this) {
-            is GenericTypeConstructor -> {
-                val type = dri.classNames ?: return null
-                val params = projections.mapNotNull { it.serialType }
-                ClassType(type, params)
-            }
-            is TypeConstructor -> dri.classNames?.let { ClassType(it) }
-            is DefinitelyNonNullable -> TODO()
-            Dynamic -> TODO()
-            is JavaObject -> TODO()
-            is Nullable -> null
-            is PrimitiveJavaType -> TODO()
-            is TypeAliased -> TODO()
-            is TypeParameter -> TODO()
-            is UnresolvedBound -> TODO()
-            Void -> null
+private fun Projection.getSerialType(projection: GenericProjection = GenericProjection.NONE): Type? {
+    return when (this) {
+        // Generic `in`
+        is Contravariance<*> -> inner.getSerialType(GenericProjection.IN)
+        // Generic `out`
+        is Covariance<*> -> inner.getSerialType(GenericProjection.OUT)
+        // Normal generic
+        is Invariance<*> -> inner.getSerialType()
+        // Wildcard
+        Star -> StarType
+        is GenericTypeConstructor -> {
+            val type = dri.classNames ?: return null
+            val params = projections.mapNotNull { it.getSerialType() }
+            ClassType(type, params, projection)
         }
-    }
 
-private val Projection.serialType: Type?
-    get() {
-        return when (this) {
-            is Contravariance<*> -> inner.serialType
-            is Covariance<*> -> inner.serialType
-            is Invariance<*> -> inner.serialType
-            Star -> StarType
-            else -> null
-        }
+        is TypeConstructor -> dri.classNames?.let { ClassType(it, projection = GenericProjection.NONE) }
+        is DefinitelyNonNullable -> TODO()
+        Dynamic -> TODO()
+        is JavaObject -> TODO()
+        is Nullable -> null
+        is PrimitiveJavaType -> TODO()
+        is TypeAliased -> TODO()
+        is TypeParameter -> TODO()
+        is UnresolvedBound -> TODO()
+        Void -> null
     }
+}
