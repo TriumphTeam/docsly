@@ -32,24 +32,24 @@ fun DFunction.returnType(): Type? = when {
     else -> type.getSerialType()
 }
 
-fun Projection.getSerialType(projection: GenericProjection? = null): Type? {
+fun Projection.getSerialType(projection: GenericProjection? = null, nullable: Boolean = false): Type? {
     return when (this) {
         // Generic `in`
-        is Contravariance<*> -> inner.getSerialType(GenericProjection.IN)
+        is Contravariance<*> -> inner.getSerialType(GenericProjection.IN, nullable)
         // Generic `out`
-        is Covariance<*> -> inner.getSerialType(GenericProjection.OUT)
+        is Covariance<*> -> inner.getSerialType(GenericProjection.OUT, nullable)
         // Normal generic
-        is Invariance<*> -> inner.getSerialType()
+        is Invariance<*> -> inner.getSerialType(nullable = nullable)
         // Wildcard
         Star -> StarType
         // A generic typed-type
-        is GenericTypeConstructor -> extractGenericType(projection)
-        is FunctionalTypeConstructor -> extractFunctionalType(projection)
-        is TypeConstructor -> dri.classNames?.let { BasicType(it) }
+        is GenericTypeConstructor -> extractGenericType(projection, nullable)
+        is FunctionalTypeConstructor -> extractFunctionalType(projection, nullable)
+        is TypeConstructor -> dri.classNames?.let { BasicType(it, nullable = nullable) }
         is DefinitelyNonNullable -> TODO()
         Dynamic -> TODO()
         is JavaObject -> TODO()
-        is Nullable -> null
+        is Nullable -> inner.getSerialType(projection, true)
         is PrimitiveJavaType -> TODO()
         is TypeAliased -> TODO()
         is TypeParameter -> TODO()
@@ -58,13 +58,13 @@ fun Projection.getSerialType(projection: GenericProjection? = null): Type? {
     }
 }
 
-private fun GenericTypeConstructor.extractGenericType(projection: GenericProjection?): Type? {
+private fun GenericTypeConstructor.extractGenericType(projection: GenericProjection?, nullable: Boolean): Type? {
     val type = dri.classNames ?: return null
     val params = projections.mapNotNull { it.getSerialType() }
-    return BasicType(type, params, projection, presentableName)
+    return BasicType(type, params, projection, presentableName, nullable)
 }
 
-private fun FunctionalTypeConstructor.extractFunctionalType(projection: GenericProjection?): Type? {
+private fun FunctionalTypeConstructor.extractFunctionalType(projection: GenericProjection?, nullable: Boolean): Type? {
     val pkg = dri.packageName ?: return null
     if ("kotlin" in pkg) {
         // KT fun
@@ -77,9 +77,13 @@ private fun FunctionalTypeConstructor.extractFunctionalType(projection: GenericP
             returnType = returnType.getSerialType(projection),
             params = rest.mapNotNull { it.getSerialType(projection) },
             name = presentableName,
-            isSuspendable = isSuspendable
+            isSuspendable = isSuspendable,
+            nullable = nullable
         )
     }
 
-    return (this as GenericTypeConstructor).extractGenericType(projection)
+    // Normally a Java function
+    val type = dri.classNames ?: return null
+    val params = projections.mapNotNull { it.getSerialType() }
+    return BasicType(type, params, projection, presentableName, nullable)
 }

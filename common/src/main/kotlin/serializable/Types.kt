@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 /** Represents a jvm type. */
 @Serializable
 sealed interface Type
-
 /** Covers most types, contains type parameters and their projects if needed. */
 @Serializable
 @SerialName("BASIC")
@@ -15,6 +14,7 @@ data class BasicType(
     val parameters: List<Type> = emptyList(),
     val projection: GenericProjection? = null,
     val name: String? = null,
+    val nullable: Boolean,
 ) : Type
 
 @Serializable
@@ -25,6 +25,7 @@ data class FunctionType(
     val returnType: Type? = null,
     val isSuspendable: Boolean = false,
     val name: String? = null,
+    val nullable: Boolean,
 ) : Type
 
 /** A start type, or Java wildcard. */
