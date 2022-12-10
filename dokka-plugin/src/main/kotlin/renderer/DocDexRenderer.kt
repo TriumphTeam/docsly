@@ -59,17 +59,15 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
         val actual = function.annotations()
         val annotations = function.annotations().flatMapped()
 
-        val returnType = function.returnType()
-
         function.parameters.forEach { parameter ->
-            println("Type for ${parameter.name} is -> ${parameter.type.getSerialType()} -> ${parameter.type::class.java}")
+            println("Type for ${parameter.name} is -> ${parameter.type.toSerialType()} -> ${parameter.type::class.java}")
         }
 
         val func = Function(
             link = "temp",
             name = function.name,
             annotations = annotations,
-            returnType = returnType
+            returnType = function.returnType
         )
 
         println(
