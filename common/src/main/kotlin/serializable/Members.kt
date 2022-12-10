@@ -3,7 +3,6 @@ package dev.triumphteam.doclopedia.serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 sealed interface Member : Linkable
 
@@ -20,5 +19,6 @@ data class Property(
 data class Function(
     override val link: String,
     val name: String,
-    val annotations: List<String> = emptyList(),
-) : Member
+    val returnType: Type?,
+    override val annotations: List<Annotation> = emptyList(),
+) : Member, AnnotationContainer

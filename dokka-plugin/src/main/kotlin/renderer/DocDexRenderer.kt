@@ -5,6 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.pages.ClasslikePageNode
 import org.jetbrains.dokka.pages.MemberPageNode
@@ -53,20 +56,24 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
     }
 
     private fun renderFunction(function: DFunction) {
-        val annotations = function.annotations
+        val actual = function.annotations()
+        val annotations = function.annotations().flatMapped()
 
-        /*when (type) {
-            is GenericTypeConstructor -> type
-        }*/
+        val returnType = function.returnType()
 
         function.parameters.forEach { parameter ->
             println("Type for ${parameter.name} is -> ${parameter.type.getSerialType()} -> ${parameter.type::class.java}")
         }
 
-        Function(
+        val func = Function(
             link = "temp",
             name = function.name,
-            annotations = annotations
+            annotations = annotations,
+            returnType = returnType
+        )
+
+        println(
+            Json.encodeToString(func)
         )
     }
 }

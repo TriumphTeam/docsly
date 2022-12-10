@@ -16,7 +16,7 @@ data class BasicType(
     val projection: GenericProjection? = null,
     val name: String? = null,
     val nullability: Nullability,
-    override val annotations: List<String> = emptyList(),
+    override val annotations: List<Annotation> = emptyList(),
 ) : Type, AnnotationContainer
 
 @Serializable
@@ -28,7 +28,7 @@ data class FunctionType(
     val isSuspendable: Boolean = false,
     val name: String? = null,
     val nullability: Nullability,
-    override val annotations: List<String> = emptyList(),
+        override val annotations: List<Annotation> = emptyList(),
 ) : Type, AnnotationContainer
 
 /** A start type, or Java wildcard. */

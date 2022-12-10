@@ -17,5 +17,5 @@ data class Package(
 
 interface AnnotationContainer {
 
-    val annotations: List<String>
+    val annotations: List<Annotation>
 }
