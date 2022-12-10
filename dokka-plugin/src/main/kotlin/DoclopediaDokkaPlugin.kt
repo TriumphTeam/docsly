@@ -5,11 +5,15 @@ import org.jetbrains.dokka.CoreExtensions
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.plugability.DokkaPlugin
 
-class DocDexDokkaPlugin : DokkaPlugin() {
+class DoclopediaDokkaPlugin : DokkaPlugin() {
 
     private val dokkaBase by lazy { plugin<DokkaBase>() }
 
     val renderer by extending {
         CoreExtensions.renderer providing ::DocDexRenderer override dokkaBase.htmlRenderer
+    }
+
+    companion object {
+        const val NAME = "Doclopedia"
     }
 }

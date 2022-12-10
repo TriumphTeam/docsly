@@ -14,3 +14,8 @@ data class Package(
     val objects: List<Object>,
     // TODO
 ) : Linkable
+
+interface AnnotationContainer {
+
+    val annotations: List<String>
+}

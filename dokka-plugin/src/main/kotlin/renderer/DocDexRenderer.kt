@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.pages.ClasslikePageNode
 import org.jetbrains.dokka.pages.MemberPageNode
@@ -54,13 +53,8 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
     }
 
     private fun renderFunction(function: DFunction) {
-        val annotations = function
-            .annotations()
-            .values
-            .flatten()
-            .map { "@${it.dri.classNames}" }
+        val annotations = function.annotations
 
-        println(function.returnType())
         /*when (type) {
             is GenericTypeConstructor -> type
         }*/

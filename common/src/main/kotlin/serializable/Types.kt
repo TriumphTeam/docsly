@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 /** Represents a jvm type. */
 @Serializable
 sealed interface Type
+
 /** Covers most types, contains type parameters and their projects if needed. */
 @Serializable
 @SerialName("BASIC")
@@ -14,8 +15,9 @@ data class BasicType(
     val parameters: List<Type> = emptyList(),
     val projection: GenericProjection? = null,
     val name: String? = null,
-    val nullable: Boolean,
-) : Type
+    val nullability: Nullability,
+    override val annotations: List<String> = emptyList(),
+) : Type, AnnotationContainer
 
 @Serializable
 @SerialName("FUNCTION")
@@ -25,8 +27,9 @@ data class FunctionType(
     val returnType: Type? = null,
     val isSuspendable: Boolean = false,
     val name: String? = null,
-    val nullable: Boolean,
-) : Type
+    val nullability: Nullability,
+    override val annotations: List<String> = emptyList(),
+) : Type, AnnotationContainer
 
 /** A start type, or Java wildcard. */
 @Serializable
@@ -37,4 +40,11 @@ object StarType : Type
 enum class GenericProjection(val kotlin: String, val java: String) {
     OUT("out", "extends"),
     IN("in", "super");
+}
+
+@Serializable
+enum class Nullability {
+    NOT_NULL,
+    NULLABLE,
+    DEFINITELY_NOT_NULL
 }
