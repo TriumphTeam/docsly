@@ -12,6 +12,7 @@ import dev.triumphteam.doclopedia.serializable.LiteralAnnotationArgument
 import dev.triumphteam.doclopedia.serializable.Nullability
 import dev.triumphteam.doclopedia.serializable.StarType
 import dev.triumphteam.doclopedia.serializable.Type
+import dev.triumphteam.doclopedia.serializable.TypeAliasType
 import dev.triumphteam.doclopedia.serializable.TypedAnnotationArgument
 import dev.triumphteam.doclopedia.serializable.ValueType
 import org.jetbrains.dokka.DokkaConfiguration
@@ -94,8 +95,12 @@ fun Projection.getSerialType(
             nullability = Nullability.NOT_NULL,
             annotations = annotations().flatMapped()
         )
-
-        is TypeAliased -> TODO()
+        // Type alias contains both the alias and original type
+        is TypeAliased -> {
+            val alias = typeAlias.getSerialType(projection, nullability) ?: return null
+            val type = inner.getSerialType(projection, nullability) ?: return null
+            TypeAliasType(alias, type)
+        }
         // Generic types `T`
         is TypeParameter -> BasicType(
             name,
@@ -132,7 +137,7 @@ private fun FunctionalTypeConstructor.extractFunctionalType(
         // KT fun
         val receiver = if (isExtensionFunction) projections.first() else null
         val returnType = projections.last()
-        val rest = projections.subList(1, projections.size - 1)
+        val rest = projections.subList(if (receiver == null) 0 else 1, projections.size - 1)
 
         return FunctionType(
             receiver = receiver?.getSerialType(projection),

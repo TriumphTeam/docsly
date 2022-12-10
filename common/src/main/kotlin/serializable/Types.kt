@@ -19,6 +19,7 @@ data class BasicType(
     override val annotations: List<Annotation> = emptyList(),
 ) : Type, AnnotationContainer
 
+/** Kotlin function type, Java's function are saved as normal generic type aka [BasicType]. */
 @Serializable
 @SerialName("FUNCTION")
 data class FunctionType(
@@ -28,7 +29,16 @@ data class FunctionType(
     val isSuspendable: Boolean = false,
     val name: String? = null,
     val nullability: Nullability,
-        override val annotations: List<Annotation> = emptyList(),
+    override val annotations: List<Annotation> = emptyList(),
+) : Type, AnnotationContainer
+
+/** A type alias type simply holds the [alias] type and the [original] type. */
+@Serializable
+@SerialName("TYPE_ALIAS")
+data class TypeAliasType(
+    val alias: Type,
+    val original: Type,
+    override val annotations: List<Annotation> = emptyList(),
 ) : Type, AnnotationContainer
 
 /** A start type, or Java wildcard. */
@@ -42,6 +52,7 @@ enum class GenericProjection(val kotlin: String, val java: String) {
     IN("in", "super");
 }
 
+/** The type of nullability for the type. */
 @Serializable
 enum class Nullability {
     NOT_NULL,
