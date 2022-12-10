@@ -167,6 +167,7 @@ private fun FunctionalTypeConstructor.extractFunctionalType(
 fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.flatMapped() =
     values.flatten().filter(Annotations.Annotation::mustBeDocumented).mapNotNull(Annotations.Annotation::mapAnnotation)
 
+/** Maps the [Annotations.Annotation] into the serializable [Annotation]. */
 private fun Annotations.Annotation.mapAnnotation(): Annotation? {
     val type = dri.classNames ?: return null
 
