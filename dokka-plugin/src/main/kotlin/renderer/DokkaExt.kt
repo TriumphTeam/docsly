@@ -171,6 +171,7 @@ fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.flatMap
 private fun Annotations.Annotation.mapAnnotation(): Annotation? {
     val type = dri.classNames ?: return null
 
+    /** Local function to simplify recursion. */
     fun AnnotationParameterValue.mapParams(): AnnotationArgument? {
         return when (this) {
             is LiteralValue -> LiteralAnnotationArgument(text())
