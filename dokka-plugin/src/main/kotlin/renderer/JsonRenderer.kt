@@ -31,6 +31,7 @@ import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
 import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.Function
 import dev.triumphteam.doclopedia.serializable.GenericType
+import dev.triumphteam.doclopedia.serializable.Language
 import dev.triumphteam.doclopedia.serializable.Parameter
 import dev.triumphteam.doclopedia.serializable.Visibility
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,7 @@ import org.jetbrains.dokka.model.Bound
 import org.jetbrains.dokka.model.DClasslike
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.model.DPackage
+import org.jetbrains.dokka.model.WithSources
 import org.jetbrains.dokka.pages.MemberPageNode
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
@@ -117,11 +119,11 @@ class JsonRenderer(context: DokkaContext) : Renderer {
         }
 
         val visibility = function.visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) }
-
         val receiver = function.receiver?.type?.toSerialType()
 
         val func = Function(
             link = "temp",
+            language = function.language,
             name = function.name,
             visibility = visibility ?: Visibility.PUBLIC,
             returnType = function.returnType,
@@ -139,3 +141,6 @@ class JsonRenderer(context: DokkaContext) : Renderer {
         )
     }
 }
+
+private val WithSources.language: Language
+    get() = if (sources.values.firstOrNull()?.path?.endsWith(".kt", true) == true) Language.KOTLIN else Language.JAVA

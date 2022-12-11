@@ -28,6 +28,7 @@ import kotlinx.serialization.Serializable
 interface Linkable {
 
     val link: String
+    val language: Language
 }
 
 @Serializable
@@ -35,6 +36,7 @@ data class Package(
     override val link: String,
     val path: String,
     val objects: List<Object>,
+    override val language: Language,
     // TODO
 ) : Linkable
 
@@ -61,6 +63,12 @@ interface Documentable {
 interface WithExtraDocs {
 
     val extraDocumentation: List<Documentation>
+}
+
+@Serializable
+enum class Language {
+    KOTLIN,
+    JAVA;
 }
 
 @Serializable

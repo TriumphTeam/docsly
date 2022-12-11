@@ -37,6 +37,7 @@ sealed interface Object : Linkable {
 @SerialName("CLASS")
 data class Class(
     override val link: String,
+    override val language: Language,
     val name: String,
     val annotations: List<String> = emptyList(),
     override val members: List<Member> = emptyList(),
@@ -47,6 +48,7 @@ data class Class(
 @SerialName("INTERFACE")
 data class Interface(
     override val link: String,
+    override val language: Language,
     val name: String,
     val extends: List<Interface> = emptyList(),
     override val members: List<Member> = emptyList(),

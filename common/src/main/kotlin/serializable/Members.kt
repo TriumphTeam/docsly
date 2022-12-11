@@ -33,6 +33,7 @@ sealed interface Member : Linkable
 @SerialName("PROPERTY")
 data class Property(
     override val link: String,
+    override val language: Language,
     val name: String,
     // TODO
 ) : Member
@@ -41,6 +42,7 @@ data class Property(
 @SerialName("FUNCTION")
 data class Function(
     override val link: String,
+    override val language: Language,
     val name: String,
     val visibility: Visibility,
     val returnType: Type?,
@@ -59,5 +61,5 @@ data class Parameter(
     @SerialName("class") val type: Type,
     override val annotations: List<Annotation>,
     override val modifiers: List<Modifier>,
-    override val documentation: DescriptionDocumentation?
+    override val documentation: DescriptionDocumentation?,
 ) : Annotated, Modifiable, Documentable
