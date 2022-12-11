@@ -23,6 +23,8 @@
  */
 package dev.triumphteam.doclopedia.renderer
 
+import dev.triumphteam.doclopedia.renderer.ext.description
+import dev.triumphteam.doclopedia.renderer.ext.getDocumentation
 import dev.triumphteam.doclopedia.renderer.ext.returnType
 import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
 import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
@@ -102,6 +104,7 @@ class JsonRenderer(context: DokkaContext) : Renderer {
                 type = type,
                 annotations = parameter.annotations().toSerialAnnotations(),
                 modifiers = parameter.modifiers().toSerialModifiers(),
+                documentation = parameter.description,
             )
         }
 
@@ -109,21 +112,26 @@ class JsonRenderer(context: DokkaContext) : Renderer {
             GenericType(
                 name = it.name,
                 constraints = it.bounds.mapNotNull(Bound::toSerialType),
-                modifiers = it.modifiers().toSerialModifiers()
+                modifiers = it.modifiers().toSerialModifiers(),
             )
         }
 
         val visibility = function.visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) }
 
+        val receiver = function.receiver?.type?.toSerialType()
+
         val func = Function(
             link = "temp",
             name = function.name,
             visibility = visibility ?: Visibility.PUBLIC,
-            annotations = annotations,
-            parameters = parameters,
             returnType = function.returnType,
+            receiver = receiver,
+            parameters = parameters,
+            annotations = annotations,
             generics = generics,
-            modifiers = function.modifiers().toSerialModifiers()
+            modifiers = function.modifiers().toSerialModifiers(),
+            documentation = function.description,
+            extraDocumentation = function.getDocumentation(),
         )
 
         println(

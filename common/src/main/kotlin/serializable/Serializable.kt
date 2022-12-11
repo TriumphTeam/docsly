@@ -53,6 +53,16 @@ interface Modifiable {
     val modifiers: List<Modifier>
 }
 
+interface Documentable {
+
+    val documentation: DescriptionDocumentation?
+}
+
+interface WithExtraDocs {
+
+    val extraDocumentation: List<Documentation>
+}
+
 @Serializable
 enum class Visibility {
     PRIVATE,

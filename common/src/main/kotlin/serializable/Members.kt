@@ -44,11 +44,14 @@ data class Function(
     val name: String,
     val visibility: Visibility,
     val returnType: Type?,
+    val receiver: Type?,
     val parameters: List<Parameter> = emptyList(),
-    override val annotations: List<Annotation> = emptyList(),
-    override val generics: List<GenericType> = emptyList(),
-    override val modifiers: List<Modifier> = emptyList(),
-) : Member, Annotated, Generic, Modifiable
+    override val annotations: List<Annotation>,
+    override val generics: List<GenericType>,
+    override val modifiers: List<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+) : Member, Annotated, Generic, Modifiable, Documentable, WithExtraDocs
 
 @Serializable
 data class Parameter(
@@ -56,4 +59,5 @@ data class Parameter(
     @SerialName("class") val type: Type,
     override val annotations: List<Annotation>,
     override val modifiers: List<Modifier>,
-) : Annotated, Modifiable
+    override val documentation: DescriptionDocumentation?
+) : Annotated, Modifiable, Documentable
