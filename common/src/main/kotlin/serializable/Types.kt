@@ -17,7 +17,7 @@ data class BasicType(
     val name: String? = null,
     val nullability: Nullability,
     override val annotations: List<Annotation> = emptyList(),
-) : Type, AnnotationContainer
+) : Type, Annotatable
 
 /** Kotlin function type, Java's function are saved as normal generic type aka [BasicType]. */
 @Serializable
@@ -30,7 +30,7 @@ data class FunctionType(
     val name: String? = null,
     val nullability: Nullability,
     override val annotations: List<Annotation> = emptyList(),
-) : Type, AnnotationContainer
+) : Type, Annotatable
 
 /** A type alias type simply holds the [alias] type and the [original] type. */
 @Serializable
@@ -39,7 +39,7 @@ data class TypeAliasType(
     val alias: Type,
     val original: Type,
     override val annotations: List<Annotation> = emptyList(),
-) : Type, AnnotationContainer
+) : Type, Annotatable
 
 /** A start type, or Java wildcard. */
 @Serializable

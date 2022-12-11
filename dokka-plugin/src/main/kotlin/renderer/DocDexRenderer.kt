@@ -1,7 +1,7 @@
 package dev.triumphteam.doclopedia.renderer
 
 import dev.triumphteam.doclopedia.serializable.Function
-import dev.triumphteam.doclopedia.serializable.Generic
+import dev.triumphteam.doclopedia.serializable.GenericType
 import dev.triumphteam.doclopedia.serializable.Parameter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -80,7 +80,7 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
         if (function.name != "testInline") return
 
         val generics = function.generics.map {
-            Generic(
+            GenericType(
                 name = it.name,
                 constraints = it.bounds.mapNotNull(Bound::toSerialType),
                 modifiers = it.modifiers().toSerialModifiers()

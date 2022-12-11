@@ -15,33 +15,37 @@ data class Package(
     // TODO
 ) : Linkable
 
-interface AnnotationContainer {
+interface Annotatable {
 
     val annotations: List<Annotation>
 }
 
-interface GenericsContainer {
+interface Generic {
 
-    val generics: List<Generic>
+    val generics: List<GenericType>
 }
 
-interface ModifierContainer {
+interface Modifiable {
 
     val modifiers: List<Modifier>
 }
-
 
 @Serializable
 enum class Visibility {
     PRIVATE,
     PROTECTED,
-    INTERNAL,
     PUBLIC,
-    PACKAGE;
+    INTERNAL, // KT only
+    PACKAGE; // Java only
 
-    fun fromString(name: String) = Modifier.values().find { name.uppercase() == it.name }
+    companion object {
+        private val MAPPED_VALUES = Modifier.values().associateBy { it.name.lowercase() }
+
+        fun fromString(name: String) = MAPPED_VALUES[name]
+    }
 }
 
+/** Shout out to non-sealed for being the odd one out and needing [displayName], thanks Java. */
 @Serializable
 enum class Modifier(val displayName: String? = null) {
     // KOTLIN ONLY
@@ -81,7 +85,6 @@ enum class Modifier(val displayName: String? = null) {
     SEALED;
 
     companion object {
-        // Shout out to non-sealed for this being needed, thanks Java
         private val MAPPED_VALUES = values().associateBy { it.displayName ?: it.name.lowercase() }
 
         fun fromString(name: String) = MAPPED_VALUES[name]
