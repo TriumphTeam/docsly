@@ -104,8 +104,6 @@ class JsonRenderer(context: DokkaContext) : Renderer {
             )
         }
 
-        if (function.name != "testInline") return
-
         val generics = function.generics.map {
             GenericType(
                 name = it.name,
