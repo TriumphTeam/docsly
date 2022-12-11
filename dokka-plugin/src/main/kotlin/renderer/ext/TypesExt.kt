@@ -1,8 +1,8 @@
 package dev.triumphteam.doclopedia.renderer.ext
 
-import dev.triumphteam.doclopedia.DoclopediaPlugin
 import dev.triumphteam.doclopedia.KOTLIN
 import dev.triumphteam.doclopedia.OBJECT
+import dev.triumphteam.doclopedia.PLUGIN_NAME
 import dev.triumphteam.doclopedia.WILD_CARD
 import dev.triumphteam.doclopedia.serializable.BasicType
 import dev.triumphteam.doclopedia.serializable.FunctionType
@@ -66,7 +66,7 @@ fun Projection.toSerialType(
         // Definitely not nullable `T & Any`
         is DefinitelyNonNullable -> inner.toSerialType(projection, Nullability.DEFINITELY_NOT_NULL)
         // JavaScript object type, not currently (probably never?) supported
-        Dynamic -> throw IllegalArgumentException("${DoclopediaPlugin.NAME} does not currently support JS.")
+        Dynamic -> throw IllegalArgumentException("$PLUGIN_NAME does not currently support JS.")
         // Java Object is treated differently for whatever reason
         is JavaObject -> BasicType(
             if (projection == null) OBJECT else WILD_CARD,

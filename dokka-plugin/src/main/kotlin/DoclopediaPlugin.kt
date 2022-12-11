@@ -12,8 +12,4 @@ class DoclopediaPlugin : DokkaPlugin() {
     val renderer by extending {
         CoreExtensions.renderer providing ::JsonRenderer override dokkaBase.htmlRenderer
     }
-
-    companion object {
-        const val NAME = "Doclopedia"
-    }
 }
