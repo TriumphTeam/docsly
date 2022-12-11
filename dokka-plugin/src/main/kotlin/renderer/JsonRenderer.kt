@@ -39,6 +39,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.resolvers.local.LocationProvider
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
 import org.jetbrains.dokka.model.Bound
@@ -52,9 +54,11 @@ import org.jetbrains.dokka.pages.PackagePageNode
 import org.jetbrains.dokka.pages.PageNode
 import org.jetbrains.dokka.pages.RootPageNode
 import org.jetbrains.dokka.plugability.DokkaContext
+import org.jetbrains.dokka.plugability.plugin
+import org.jetbrains.dokka.plugability.querySingle
 import org.jetbrains.dokka.renderers.Renderer
 
-class JsonRenderer(context: DokkaContext) : Renderer {
+class JsonRenderer(private val context: DokkaContext) : Renderer {
 
     override fun render(root: RootPageNode) {
         runBlocking(Dispatchers.Default) {
@@ -65,12 +69,14 @@ class JsonRenderer(context: DokkaContext) : Renderer {
     private suspend fun renderModule(root: PageNode) {
         if (root !is ModulePageNode) return
 
+        val locationProvider = context.plugin<DokkaBase>().querySingle { locationProviderFactory }.getLocationProvider(root)
+
         coroutineScope {
             root.children.filterIsInstance<PackagePageNode>().forEach { packagePageNode ->
 
                 val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@forEach
 
-                packageDoc.classlikes.forEach(::renderClass)
+                packageDoc.classlikes.forEach { renderClass(it, locationProvider) }
 
                 packageDoc.functions.forEach {
                     println("TOP LEVEL FUN -> ${it.name}")
@@ -89,12 +95,12 @@ class JsonRenderer(context: DokkaContext) : Renderer {
         println("Rendering a top level function -> ${node.name}")
     }
 
-    private fun renderClass(classDoc: DClasslike) {
+    private fun renderClass(classDoc: DClasslike, locationProvider: LocationProvider) {
         // TODO: 10/12/2022 RENDER REST OF CLASS THINGS
-        classDoc.functions.forEach(::renderFunction)
+        classDoc.functions.forEach { renderFunction(it, locationProvider) }
     }
 
-    private fun renderFunction(function: DFunction) {
+    private fun renderFunction(function: DFunction, locationProvider: LocationProvider) {
         val annotations = function.annotations().toSerialAnnotations()
 
         val parameters = function.parameters.mapNotNull { parameter ->
@@ -120,9 +126,9 @@ class JsonRenderer(context: DokkaContext) : Renderer {
 
         val visibility = function.visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) }
         val receiver = function.receiver?.type?.toSerialType()
-
+        
         val func = Function(
-            link = "temp",
+            link = locationProvider.expectedLocationForDri(function.dri),
             language = function.language,
             name = function.name,
             visibility = visibility ?: Visibility.PUBLIC,
