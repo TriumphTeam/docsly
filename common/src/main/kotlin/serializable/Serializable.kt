@@ -25,52 +25,65 @@ package dev.triumphteam.doclopedia.serializable
 
 import kotlinx.serialization.Serializable
 
-interface Linkable {
+/** Any serializable that has [Annotation]s. */
+interface WithAnnotations {
+    val annotations: List<Annotation>
+}
 
-    val link: String
+/** Any serializable that has [GenericType]s. */
+interface WithGenerics {
+    val generics: List<GenericType>
+}
+
+/** Any serializable that has [Modifier]s. */
+interface WithModifiers {
+    val modifiers: List<Modifier>
+
+}
+
+/** Any serializable that has extra [Documentation]s. */
+interface WithExtraDocs {
+    val extraDocumentation: List<Documentation>
+}
+
+/** Any serializable that can be linked to a specific location of a language. */
+interface WithLocation {
+    val location: String
     val language: Language
+}
+
+/** Any serializable that has a [Visibility]. */
+interface WithVisibility {
+    val visibility: Visibility
+}
+
+/** Any serializable that is documentable. */
+interface Documentable {
+    val documentation: DescriptionDocumentation?
+}
+
+/** A serializable that has a name. */
+interface Named {
+    val name: String
 }
 
 @Serializable
 data class Package(
-    override val link: String,
+    override val location: String,
     val path: String,
     val objects: List<Object>,
     override val language: Language,
     // TODO
-) : Linkable
+) : WithLocation
 
-interface Annotated {
-
-    val annotations: List<Annotation>
-}
-
-interface Generic {
-
-    val generics: List<GenericType>
-}
-
-interface Modifiable {
-
-    val modifiers: List<Modifier>
-}
-
-interface Documentable {
-
-    val documentation: DescriptionDocumentation?
-}
-
-interface WithExtraDocs {
-
-    val extraDocumentation: List<Documentation>
-}
-
+/** Possible documentation languages. */
 @Serializable
 enum class Language {
     KOTLIN,
     JAVA;
 }
 
+/** Possible visibilities for a serializable [WithVisibility]. */
 @Serializable
 enum class Visibility {
     PRIVATE,
@@ -82,6 +95,7 @@ enum class Visibility {
     companion object {
         private val MAPPED_VALUES = values().associateBy { it.name.lowercase() }
 
+        /** If the type is empty it'll be Java's [PACKAGE], else we take it from the mapped values. */
         fun fromString(name: String) = if (name.isEmpty()) PACKAGE else MAPPED_VALUES[name]
     }
 }

@@ -28,7 +28,7 @@ import kotlinx.serialization.Serializable
 import java.lang.reflect.Member
 
 @Serializable
-sealed interface Object : Linkable {
+sealed interface Object : WithLocation, Named {
 
     val members: List<Member>
 }
@@ -36,9 +36,9 @@ sealed interface Object : Linkable {
 @Serializable
 @SerialName("CLASS")
 data class Class(
-    override val link: String,
+    override val location: String,
     override val language: Language,
-    val name: String,
+    override val name: String,
     val annotations: List<String> = emptyList(),
     override val members: List<Member> = emptyList(),
     // TODO
@@ -47,9 +47,9 @@ data class Class(
 @Serializable
 @SerialName("INTERFACE")
 data class Interface(
-    override val link: String,
+    override val location: String,
     override val language: Language,
-    val name: String,
+    override val name: String,
     val extends: List<Interface> = emptyList(),
     override val members: List<Member> = emptyList(),
     // TODO

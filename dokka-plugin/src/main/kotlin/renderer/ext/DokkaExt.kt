@@ -24,8 +24,13 @@
 package dev.triumphteam.doclopedia.renderer.ext
 
 import dev.triumphteam.doclopedia.serializable.Modifier
+import dev.triumphteam.doclopedia.serializable.Visibility
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.model.ExtraModifiers
+import org.jetbrains.dokka.model.WithVisibility
 
 fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers() =
     values.flatten().mapNotNull { Modifier.fromString(it.name) }
+
+val WithVisibility.finalVisibility: Visibility
+    get() = visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) } ?: Visibility.PUBLIC

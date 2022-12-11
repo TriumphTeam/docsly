@@ -5,7 +5,6 @@ import dev.triumphteam.doclopedia.component.CodeInlineComponent
 import dev.triumphteam.doclopedia.component.Component
 import dev.triumphteam.doclopedia.component.DocumentationLinkComponent
 import dev.triumphteam.doclopedia.component.EmphasisComponent
-import dev.triumphteam.doclopedia.component.EmptyComponent
 import dev.triumphteam.doclopedia.component.ParagraphComponent
 import dev.triumphteam.doclopedia.component.RootComponent
 import dev.triumphteam.doclopedia.component.StrikethroughComponent
@@ -52,25 +51,30 @@ import org.jetbrains.dokka.model.doc.Throws
 import org.jetbrains.dokka.model.doc.U
 import org.jetbrains.dokka.model.doc.Version
 
-private val Documentable.document: DocumentationNode?
-    get() = documentation.values.firstOrNull()
-
+/** Shortcut to get the [Documentable]'s main documentation. */
 val Documentable.description: DescriptionDocumentation?
     get() = document?.children?.filterIsInstance<Description>()?.firstOrNull()?.let {
         DescriptionDocumentation(parseRoot(it.children))
     }
 
+/** Shortcut to get the main documentation, specifically of a parameter. */
 val DParameter.description: DescriptionDocumentation?
     get() = document?.children?.firstOrNull()?.let {
         DescriptionDocumentation(parseRoot(it.children))
     }
 
+/** Shortcut to get all the extra documentation from a [Documentable]. */
 fun Documentable.getDocumentation(): List<Documentation> {
     return document?.children?.mapNotNull {
         it.toDocumentation()
     } ?: emptyList()
 }
 
+/** Shortcut to get the [Documentable]'s main [DocumentationNode]. */
+private val Documentable.document: DocumentationNode?
+    get() = documentation.values.firstOrNull()
+
+/** Converting a [TagWrapper] into the correct serializable [Documentation]. */
 private fun TagWrapper.toDocumentation(): Documentation? {
     return when (this) {
         is Author -> AuthorDocumentation(parseRoot(children))
@@ -88,8 +92,10 @@ private fun TagWrapper.toDocumentation(): Documentation? {
     }
 }
 
+/** Entry point for parsing [DocTag] into [Component] to be serialized, always start as [RootComponent]. */
 private fun parseRoot(tags: List<DocTag>) = RootComponent(tags.flatMap(::parseTag))
 
+/** Recursive parsing of [DocTag]s into their correspondent [Component]. */
 private fun parseTag(tag: DocTag): List<Component> = when (tag) {
     is B -> listOf(StrongEmphasisComponent(tag.children.flatMap(::parseTag)))
     is I -> listOf(EmphasisComponent(tag.children.flatMap(::parseTag)))
@@ -101,5 +107,5 @@ private fun parseTag(tag: DocTag): List<Component> = when (tag) {
     is CodeInline -> listOf(CodeInlineComponent(tag.children.flatMap(::parseTag)))
     is DocumentationLink -> listOf(DocumentationLinkComponent(tag.children.flatMap(::parseTag)))
     is Text -> listOf(TextComponent(tag.body, tag.children.flatMap(::parseTag)))
-    else -> tag.children.flatMap(::parseTag).filterNot { it is EmptyComponent }
+    else -> tag.children.flatMap(::parseTag)
 }

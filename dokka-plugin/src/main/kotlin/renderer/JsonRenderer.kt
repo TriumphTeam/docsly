@@ -24,16 +24,16 @@
 package dev.triumphteam.doclopedia.renderer
 
 import dev.triumphteam.doclopedia.renderer.ext.description
+import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
 import dev.triumphteam.doclopedia.renderer.ext.getDocumentation
 import dev.triumphteam.doclopedia.renderer.ext.returnType
+import dev.triumphteam.doclopedia.renderer.ext.serialGenerics
 import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
 import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
 import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.Function
-import dev.triumphteam.doclopedia.serializable.GenericType
 import dev.triumphteam.doclopedia.serializable.Language
 import dev.triumphteam.doclopedia.serializable.Parameter
-import dev.triumphteam.doclopedia.serializable.Visibility
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
@@ -43,7 +43,6 @@ import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.resolvers.local.LocationProvider
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
-import org.jetbrains.dokka.model.Bound
 import org.jetbrains.dokka.model.DClasslike
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.model.DPackage
@@ -69,7 +68,8 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
     private suspend fun renderModule(root: PageNode) {
         if (root !is ModulePageNode) return
 
-        val locationProvider = context.plugin<DokkaBase>().querySingle { locationProviderFactory }.getLocationProvider(root)
+        val locationProvider =
+            context.plugin<DokkaBase>().querySingle { locationProviderFactory }.getLocationProvider(root)
 
         coroutineScope {
             root.children.filterIsInstance<PackagePageNode>().forEach { packagePageNode ->
@@ -97,12 +97,17 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
 
     private fun renderClass(classDoc: DClasslike, locationProvider: LocationProvider) {
         // TODO: 10/12/2022 RENDER REST OF CLASS THINGS
-        classDoc.functions.forEach { renderFunction(it, locationProvider) }
+        classDoc.functions.forEach {
+            val test = renderFunction(it, locationProvider)
+            println(
+                Json.encodeToString(test)
+            )
+        }
     }
 
-    private fun renderFunction(function: DFunction, locationProvider: LocationProvider) {
-        val annotations = function.annotations().toSerialAnnotations()
-
+    /** Renders all of a [DFunction] into the serializable [Function] type. */
+    private fun renderFunction(function: DFunction, locationProvider: LocationProvider): Function {
+        // Gathering all parameters for the function
         val parameters = function.parameters.mapNotNull { parameter ->
             val name = parameter.name ?: return@mapNotNull null
             val type = parameter.type.toSerialType() ?: return@mapNotNull null
@@ -116,37 +121,23 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
             )
         }
 
-        val generics = function.generics.map {
-            GenericType(
-                name = it.name,
-                constraints = it.bounds.mapNotNull(Bound::toSerialType),
-                modifiers = it.modifiers().toSerialModifiers(),
-            )
-        }
-
-        val visibility = function.visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) }
-        val receiver = function.receiver?.type?.toSerialType()
-        
-        val func = Function(
-            link = locationProvider.expectedLocationForDri(function.dri),
+        return Function(
+            location = locationProvider.expectedLocationForDri(function.dri),
             language = function.language,
             name = function.name,
-            visibility = visibility ?: Visibility.PUBLIC,
+            visibility = function.finalVisibility,
             returnType = function.returnType,
-            receiver = receiver,
+            receiver = function.receiver?.type?.toSerialType(),
             parameters = parameters,
-            annotations = annotations,
-            generics = generics,
+            annotations = function.annotations().toSerialAnnotations(),
+            generics = function.serialGenerics,
             modifiers = function.modifiers().toSerialModifiers(),
             documentation = function.description,
             extraDocumentation = function.getDocumentation(),
         )
-
-        println(
-            Json.encodeToString(func)
-        )
     }
 }
 
+/** Small hack to get the language of the documentable we're currently serializing. */
 private val WithSources.language: Language
     get() = if (sources.values.firstOrNull()?.path?.endsWith(".kt", true) == true) Language.KOTLIN else Language.JAVA

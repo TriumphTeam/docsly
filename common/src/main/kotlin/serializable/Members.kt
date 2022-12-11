@@ -27,24 +27,24 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Member : Linkable
+sealed interface Member : WithLocation, Named
 
 @Serializable
 @SerialName("PROPERTY")
 data class Property(
-    override val link: String,
+    override val location: String,
     override val language: Language,
-    val name: String,
+    override val name: String,
     // TODO
 ) : Member
 
 @Serializable
 @SerialName("FUNCTION")
 data class Function(
-    override val link: String,
+    override val location: String,
     override val language: Language,
-    val name: String,
-    val visibility: Visibility,
+    override val name: String,
+    override val visibility: Visibility,
     val returnType: Type?,
     val receiver: Type?,
     val parameters: List<Parameter> = emptyList(),
@@ -53,13 +53,13 @@ data class Function(
     override val modifiers: List<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : Member, Annotated, Generic, Modifiable, Documentable, WithExtraDocs
+) : Member, Documentable, WithAnnotations, WithGenerics, WithModifiers, WithExtraDocs, WithVisibility
 
 @Serializable
 data class Parameter(
-    val name: String,
+    override val name: String,
     @SerialName("class") val type: Type,
     override val annotations: List<Annotation>,
     override val modifiers: List<Modifier>,
     override val documentation: DescriptionDocumentation?,
-) : Annotated, Modifiable, Documentable
+) : WithAnnotations, WithModifiers, Documentable, Named

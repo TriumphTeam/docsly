@@ -30,12 +30,15 @@ import dev.triumphteam.doclopedia.WILD_CARD
 import dev.triumphteam.doclopedia.serializable.BasicType
 import dev.triumphteam.doclopedia.serializable.FunctionType
 import dev.triumphteam.doclopedia.serializable.GenericProjection
+import dev.triumphteam.doclopedia.serializable.GenericType
 import dev.triumphteam.doclopedia.serializable.Nullability
 import dev.triumphteam.doclopedia.serializable.StarType
 import dev.triumphteam.doclopedia.serializable.Type
 import dev.triumphteam.doclopedia.serializable.TypeAliasType
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
+import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
 import org.jetbrains.dokka.links.DriOfUnit
+import org.jetbrains.dokka.model.Bound
 import org.jetbrains.dokka.model.Contravariance
 import org.jetbrains.dokka.model.Covariance
 import org.jetbrains.dokka.model.DFunction
@@ -54,6 +57,7 @@ import org.jetbrains.dokka.model.TypeConstructor
 import org.jetbrains.dokka.model.TypeParameter
 import org.jetbrains.dokka.model.UnresolvedBound
 import org.jetbrains.dokka.model.Void
+import org.jetbrains.dokka.model.WithGenerics
 
 /** The return type of the function. */
 val DFunction.returnType: Type?
@@ -62,6 +66,16 @@ val DFunction.returnType: Type?
         type is TypeConstructor && (type as TypeConstructor).dri == DriOfUnit -> null
         type is Void -> null
         else -> type.toSerialType()
+    }
+
+/** Gets the generics of a [WithGenerics] documentable mapped to the serial type. */
+val WithGenerics.serialGenerics: List<GenericType>
+    get() = generics.map {
+        GenericType(
+            name = it.name,
+            constraints = it.bounds.mapNotNull(Bound::toSerialType),
+            modifiers = it.modifiers().toSerialModifiers(),
+        )
     }
 
 /** Turns the projection type into a serial type recursively. */
