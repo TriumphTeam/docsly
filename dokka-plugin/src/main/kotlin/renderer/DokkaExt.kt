@@ -9,6 +9,7 @@ import dev.triumphteam.doclopedia.serializable.BasicType
 import dev.triumphteam.doclopedia.serializable.FunctionType
 import dev.triumphteam.doclopedia.serializable.GenericProjection
 import dev.triumphteam.doclopedia.serializable.LiteralAnnotationArgument
+import dev.triumphteam.doclopedia.serializable.Modifier
 import dev.triumphteam.doclopedia.serializable.Nullability
 import dev.triumphteam.doclopedia.serializable.StarType
 import dev.triumphteam.doclopedia.serializable.Type
@@ -29,6 +30,7 @@ import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.model.DefinitelyNonNullable
 import org.jetbrains.dokka.model.Dynamic
 import org.jetbrains.dokka.model.EnumValue
+import org.jetbrains.dokka.model.ExtraModifiers
 import org.jetbrains.dokka.model.FunctionalTypeConstructor
 import org.jetbrains.dokka.model.GenericTypeConstructor
 import org.jetbrains.dokka.model.Invariance
@@ -96,7 +98,7 @@ fun Projection.toSerialType(
             name,
             projection = projection,
             nullability = Nullability.NOT_NULL,
-            annotations = annotations().flatMapped()
+            annotations = annotations().toSerialAnnotations()
         )
         // Type alias contains both the alias and original type
         is TypeAliased -> {
@@ -109,7 +111,7 @@ fun Projection.toSerialType(
             name,
             projection = projection,
             nullability = nullability,
-            annotations = annotations().flatMapped()
+            annotations = annotations().toSerialAnnotations()
         )
         // TODO: Honestly I have no idea what to do with this one
         is UnresolvedBound -> null
@@ -128,7 +130,7 @@ private fun GenericTypeConstructor.toBasicType(projection: GenericProjection?, n
         projection,
         presentableName,
         nullability,
-        annotations().flatMapped()
+        annotations().toSerialAnnotations()
     )
 }
 
@@ -151,7 +153,7 @@ private fun FunctionalTypeConstructor.toFunctionalType(
             name = presentableName,
             isSuspendable = isSuspendable,
             nullability = nullability,
-            annotations = annotations().flatMapped()
+            annotations = annotations().toSerialAnnotations()
         )
     }
 
@@ -164,12 +166,12 @@ private fun FunctionalTypeConstructor.toFunctionalType(
         projection,
         presentableName,
         nullability,
-        annotations().flatMapped()
+        annotations().toSerialAnnotations()
     )
 }
 
 /** Flattens and maps the annotations into a string List. */
-fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.flatMapped() =
+fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.toSerialAnnotations() =
     values.flatten().filter(Annotations.Annotation::mustBeDocumented).mapNotNull(Annotations.Annotation::mapAnnotation)
 
 /** Maps the [Annotations.Annotation] into the serializable [Annotation]. */
@@ -193,3 +195,6 @@ private fun Annotations.Annotation.mapAnnotation(): Annotation? {
 
     return Annotation(type, arguments)
 }
+
+fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers() =
+    values.flatten().mapNotNull { Modifier.fromString(it.name) }

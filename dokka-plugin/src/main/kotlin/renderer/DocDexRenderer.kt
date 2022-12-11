@@ -1,15 +1,19 @@
 package dev.triumphteam.doclopedia.renderer
 
 import dev.triumphteam.doclopedia.serializable.Function
+import dev.triumphteam.doclopedia.serializable.Generic
+import dev.triumphteam.doclopedia.serializable.Parameter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
+import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
+import org.jetbrains.dokka.model.Bound
+import org.jetbrains.dokka.model.DClasslike
 import org.jetbrains.dokka.model.DFunction
-import org.jetbrains.dokka.pages.ClasslikePageNode
+import org.jetbrains.dokka.model.DPackage
 import org.jetbrains.dokka.pages.MemberPageNode
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
@@ -31,9 +35,19 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
 
         coroutineScope {
             root.children.filterIsInstance<PackagePageNode>().forEach { packagePageNode ->
-                packagePageNode.children.forEach {
-                    if (it is MemberPageNode) launch { render(it) }
-                    if (it is ClasslikePageNode) launch { render(it) }
+
+                val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@forEach
+
+                packageDoc.classlikes.forEach(::renderClass)
+
+                packageDoc.functions.forEach {
+                    println("TOP LEVEL FUN -> ${it.name}")
+                    // TODO: 10/12/2022 RENDER TOP LEVEL FUNCS 
+                }
+
+                packageDoc.properties.forEach {
+                    println("TOP LEVEL PROPERTY -> ${it.name}")
+                    // TODO: 10/12/2022 RENDER TOP LEVEL PROPERTIES
                 }
             }
         }
@@ -43,31 +57,44 @@ class DocDexRenderer(context: DokkaContext) : Renderer {
         println("Rendering a top level function -> ${node.name}")
     }
 
-    private fun render(node: ClasslikePageNode) {
-        println("Collecting for class -> ${node.name}")
-
-        node.children.filterIsInstance<MemberPageNode>().forEach { member ->
-            val documentable = member.documentables.firstOrNull() ?: return@forEach
-
-            when (documentable) {
-                is DFunction -> renderFunction(documentable)
-            }
-        }
+    private fun renderClass(classDoc: DClasslike) {
+        // TODO: 10/12/2022 RENDER REST OF CLASS THINGS
+        classDoc.functions.forEach(::renderFunction)
     }
 
     private fun renderFunction(function: DFunction) {
-        val actual = function.annotations()
-        val annotations = function.annotations().flatMapped()
+        val annotations = function.annotations().toSerialAnnotations()
 
-        function.parameters.forEach { parameter ->
-            println("Type for ${parameter.name} is -> ${parameter.type.toSerialType()} -> ${parameter.type::class.java}")
+        val parameters = function.parameters.mapNotNull { parameter ->
+            val name = parameter.name ?: return@mapNotNull null
+            val type = parameter.type.toSerialType() ?: return@mapNotNull null
+
+            Parameter(
+                name = name,
+                type = type,
+                annotations = parameter.annotations().toSerialAnnotations(),
+                modifiers = parameter.modifiers().toSerialModifiers(),
+            )
+        }
+
+        if (function.name != "testInline") return
+
+        val generics = function.generics.map {
+            Generic(
+                name = it.name,
+                constraints = it.bounds.mapNotNull(Bound::toSerialType),
+                modifiers = it.modifiers().toSerialModifiers()
+            )
         }
 
         val func = Function(
             link = "temp",
             name = function.name,
             annotations = annotations,
-            returnType = function.returnType
+            parameters = parameters,
+            returnType = function.returnType,
+            generics = generics,
+            modifiers = function.modifiers().toSerialModifiers()
         )
 
         println(
