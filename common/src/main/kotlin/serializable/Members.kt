@@ -33,10 +33,3 @@ data class Parameter(
     override val annotations: List<Annotation>,
     override val modifiers: List<Modifier>,
 ) : Annotatable, Modifiable
-
-@Serializable
-data class GenericType(
-    val name: String,
-    val constraints: List<Type> = emptyList(),
-    override val modifiers: List<Modifier> = emptyList(),
-) : Type, Modifiable

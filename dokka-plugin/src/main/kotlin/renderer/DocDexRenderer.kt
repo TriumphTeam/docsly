@@ -1,5 +1,9 @@
 package dev.triumphteam.doclopedia.renderer
 
+import dev.triumphteam.doclopedia.renderer.ext.returnType
+import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
+import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
+import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.Function
 import dev.triumphteam.doclopedia.serializable.GenericType
 import dev.triumphteam.doclopedia.serializable.Parameter

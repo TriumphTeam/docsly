@@ -41,6 +41,15 @@ data class TypeAliasType(
     override val annotations: List<Annotation> = emptyList(),
 ) : Type, Annotatable
 
+/** Represents a generic type. */
+@Serializable
+@SerialName("GENERIC")
+data class GenericType(
+    val name: String,
+    val constraints: List<Type> = emptyList(),
+    override val modifiers: List<Modifier> = emptyList(),
+) : Type, Modifiable
+
 /** A start type, or Java wildcard. */
 @Serializable
 object StarType : Type

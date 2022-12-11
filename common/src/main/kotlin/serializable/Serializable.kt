@@ -65,7 +65,6 @@ enum class Modifier(val displayName: String? = null) {
     OPERATOR,
     TAILREC,
     VARARG,
-    FUN,
 
     // JAVA ONLY
     STATIC,

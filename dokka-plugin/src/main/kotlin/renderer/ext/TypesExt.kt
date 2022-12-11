@@ -1,41 +1,27 @@
-package dev.triumphteam.doclopedia.renderer
+package dev.triumphteam.doclopedia.renderer.ext
 
 import dev.triumphteam.doclopedia.DoclopediaDokkaPlugin
-import dev.triumphteam.doclopedia.serializable.Annotation
-import dev.triumphteam.doclopedia.serializable.AnnotationAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.AnnotationArgument
-import dev.triumphteam.doclopedia.serializable.ArrayAnnotationArgument
+import dev.triumphteam.doclopedia.KOTLIN
+import dev.triumphteam.doclopedia.OBJECT
+import dev.triumphteam.doclopedia.WILD_CARD
 import dev.triumphteam.doclopedia.serializable.BasicType
 import dev.triumphteam.doclopedia.serializable.FunctionType
 import dev.triumphteam.doclopedia.serializable.GenericProjection
-import dev.triumphteam.doclopedia.serializable.LiteralAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.Modifier
 import dev.triumphteam.doclopedia.serializable.Nullability
 import dev.triumphteam.doclopedia.serializable.StarType
 import dev.triumphteam.doclopedia.serializable.Type
 import dev.triumphteam.doclopedia.serializable.TypeAliasType
-import dev.triumphteam.doclopedia.serializable.TypedAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.ValueType
-import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.links.DriOfUnit
-import org.jetbrains.dokka.model.AnnotationParameterValue
-import org.jetbrains.dokka.model.AnnotationValue
-import org.jetbrains.dokka.model.Annotations
-import org.jetbrains.dokka.model.ArrayValue
-import org.jetbrains.dokka.model.ClassValue
 import org.jetbrains.dokka.model.Contravariance
 import org.jetbrains.dokka.model.Covariance
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.model.DefinitelyNonNullable
 import org.jetbrains.dokka.model.Dynamic
-import org.jetbrains.dokka.model.EnumValue
-import org.jetbrains.dokka.model.ExtraModifiers
 import org.jetbrains.dokka.model.FunctionalTypeConstructor
 import org.jetbrains.dokka.model.GenericTypeConstructor
 import org.jetbrains.dokka.model.Invariance
 import org.jetbrains.dokka.model.JavaObject
-import org.jetbrains.dokka.model.LiteralValue
 import org.jetbrains.dokka.model.Nullable
 import org.jetbrains.dokka.model.PrimitiveJavaType
 import org.jetbrains.dokka.model.Projection
@@ -46,11 +32,7 @@ import org.jetbrains.dokka.model.TypeParameter
 import org.jetbrains.dokka.model.UnresolvedBound
 import org.jetbrains.dokka.model.Void
 
-private const val OBJECT = "Object"
-private const val WILD_CARD = "?"
-private const val DEPRECATED = "Deprecated"
-
-/** The return type of a function. */
+/** The return type of the function. */
 val DFunction.returnType: Type?
     get() = when {
         isConstructor -> null
@@ -140,7 +122,7 @@ private fun FunctionalTypeConstructor.toFunctionalType(
     nullability: Nullability,
 ): Type? {
     val pkg = dri.packageName ?: return null
-    if ("kotlin" in pkg) {
+    if (KOTLIN in pkg) {
         // KT fun
         val receiver = if (isExtensionFunction) projections.first() else null
         val returnType = projections.last()
@@ -169,32 +151,3 @@ private fun FunctionalTypeConstructor.toFunctionalType(
         annotations().toSerialAnnotations()
     )
 }
-
-/** Flattens and maps the annotations into a string List. */
-fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.toSerialAnnotations() =
-    values.flatten().filter(Annotations.Annotation::mustBeDocumented).mapNotNull(Annotations.Annotation::mapAnnotation)
-
-/** Maps the [Annotations.Annotation] into the serializable [Annotation]. */
-private fun Annotations.Annotation.mapAnnotation(): Annotation? {
-    val type = dri.classNames ?: return null
-
-    /** Local function to simplify recursion. */
-    fun AnnotationParameterValue.mapParams(): AnnotationArgument? {
-        return when (this) {
-            is LiteralValue -> LiteralAnnotationArgument(text())
-            is AnnotationValue -> annotation.mapAnnotation()?.let(::AnnotationAnnotationArgument)
-            is ArrayValue -> ArrayAnnotationArgument(value.mapNotNull(AnnotationParameterValue::mapParams))
-            is ClassValue -> TypedAnnotationArgument(className, ValueType.CLASS)
-            is EnumValue -> TypedAnnotationArgument(enumName, ValueType.ENUM)
-        }
-    }
-
-    val arguments = params.mapNotNull { (key, value) ->
-        value.mapParams()?.let { key to it }
-    }.toMap()
-
-    return Annotation(type, arguments)
-}
-
-fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers() =
-    values.flatten().mapNotNull { Modifier.fromString(it.name) }
