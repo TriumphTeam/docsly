@@ -38,7 +38,7 @@ data class Package(
     // TODO
 ) : Linkable
 
-interface Annotatable {
+interface Annotated {
 
     val annotations: List<Annotation>
 }
@@ -62,9 +62,9 @@ enum class Visibility {
     PACKAGE; // Java only
 
     companion object {
-        private val MAPPED_VALUES = Modifier.values().associateBy { it.name.lowercase() }
+        private val MAPPED_VALUES = values().associateBy { it.name.lowercase() }
 
-        fun fromString(name: String) = MAPPED_VALUES[name]
+        fun fromString(name: String) = if (name.isEmpty()) PACKAGE else MAPPED_VALUES[name]
     }
 }
 

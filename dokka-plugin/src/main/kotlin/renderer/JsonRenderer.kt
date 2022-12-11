@@ -30,6 +30,7 @@ import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.Function
 import dev.triumphteam.doclopedia.serializable.GenericType
 import dev.triumphteam.doclopedia.serializable.Parameter
+import dev.triumphteam.doclopedia.serializable.Visibility
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
@@ -112,9 +113,12 @@ class JsonRenderer(context: DokkaContext) : Renderer {
             )
         }
 
+        val visibility = function.visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) }
+
         val func = Function(
             link = "temp",
             name = function.name,
+            visibility = visibility ?: Visibility.PUBLIC,
             annotations = annotations,
             parameters = parameters,
             returnType = function.returnType,

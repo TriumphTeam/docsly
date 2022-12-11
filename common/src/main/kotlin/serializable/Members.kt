@@ -42,12 +42,13 @@ data class Property(
 data class Function(
     override val link: String,
     val name: String,
+    val visibility: Visibility,
     val returnType: Type?,
     val parameters: List<Parameter> = emptyList(),
     override val annotations: List<Annotation> = emptyList(),
     override val generics: List<GenericType> = emptyList(),
     override val modifiers: List<Modifier> = emptyList(),
-) : Member, Annotatable, Generic, Modifiable
+) : Member, Annotated, Generic, Modifiable
 
 @Serializable
 data class Parameter(
@@ -55,4 +56,4 @@ data class Parameter(
     @SerialName("class") val type: Type,
     override val annotations: List<Annotation>,
     override val modifiers: List<Modifier>,
-) : Annotatable, Modifiable
+) : Annotated, Modifiable
