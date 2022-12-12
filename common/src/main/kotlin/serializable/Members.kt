@@ -27,7 +27,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Member : WithLocation, Named, Documentable, WithVisibility, WithExtraDocs, WithModifiers, WithGenerics,
+sealed interface Member : WithLocation, Documentable, WithVisibility, WithExtraDocs, WithModifiers, WithGenerics,
     WithAnnotations, WithReceiver
 
 /**

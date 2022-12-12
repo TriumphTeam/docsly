@@ -42,8 +42,7 @@ interface WithSuperTypes {
 }
 
 @Serializable
-sealed interface ClassLike : WithLocation, Named, Documentable, WithVisibility, WithAnnotations,
-    WithModifiers, WithExtraDocs
+sealed interface ClassLike : WithLocation, Documentable, WithVisibility, WithAnnotations, WithModifiers, WithExtraDocs
 
 @Serializable
 @SerialName("CLASS")

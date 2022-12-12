@@ -49,7 +49,7 @@ interface WithExtraDocs {
 
 /** Any serializable that can be linked to a specific location of a language. */
 @Serializable
-sealed interface WithLocation {
+sealed interface WithLocation : Named {
     /** The URL location of the serializable. */
     val location: String
 
@@ -95,6 +95,7 @@ data class Path(
 data class Package(
     override val location: String,
     override val path: Path,
+    override val name: String,
     val objects: List<ClassLike>,
     override val language: Language,
     // TODO

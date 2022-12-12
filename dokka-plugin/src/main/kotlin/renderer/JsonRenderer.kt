@@ -102,26 +102,26 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
 
                 val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@mapNotNull null
 
+                // Main package classes
                 packageDoc.classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
-
-                packageDoc.functions.forEach { it.render(locationProvider) }
-
-                packageDoc.properties.forEach {
-                    println("TOP LEVEL PROPERTY -> ${it.name}")
-                    // TODO: 10/12/2022 RENDER TOP LEVEL PROPERTIES
-                }
+                // Top level functions
+                packageDoc.functions.forEach { contentBuilder.append(it.render(locationProvider)) }
+                // Top level properties
+                packageDoc.properties.forEach { contentBuilder.append(it.render(locationProvider)) }
             }
 
-            println(Json.encodeToString(contentBuilder.build()))
+            println(Json.encodeToString(contentBuilder.build().associateBy { it.name }))
         }
     }
 
+    /** Renders all the [ClassLike] and return themselves, but meanwhile appends all its children into the [ContentBuilder]. */
     private fun DClasslike.render(locationProvider: LocationProvider, contentBuilder: ContentBuilder): ClassLike {
-        // TODO: 10/12/2022 RENDER REST OF CLASS THINGS
+        // Append all the children before appending itself
         functions.forEach { contentBuilder.append(it.render(locationProvider)) }
         properties.forEach { contentBuilder.append(it.render(locationProvider)) }
         classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
 
+        // Return itself to be appended
         return when (this) {
             is DClass -> {
                 ClassClassLike(
