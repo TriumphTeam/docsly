@@ -70,7 +70,7 @@ data class TypeAliasType(
 data class GenericType(
     val name: String,
     val constraints: List<Type> = emptyList(),
-    override val modifiers: List<Modifier> = emptyList(),
+    override val modifiers: Set<Modifier> = emptySet(),
 ) : Type, WithModifiers
 
 /** A start type, or Java wildcard. */

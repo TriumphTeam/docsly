@@ -76,7 +76,7 @@ val WithGenerics.serialGenerics: List<GenericType>
         GenericType(
             name = it.name,
             constraints = it.bounds.mapNotNull(Bound::toSerialType).filterNot(DEFAULT_CONSTRAINT::equals),
-            modifiers = it.modifiers().toSerialModifiers(),
+            modifiers = it.modifiers().toSerialModifiers().toSet(),
         )
     }
 

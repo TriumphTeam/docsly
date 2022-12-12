@@ -38,7 +38,7 @@ interface WithGenerics {
 
 /** Any serializable that has [Modifier]s. */
 interface WithModifiers {
-    val modifiers: List<Modifier>
+    val modifiers: Set<Modifier>
 
 }
 
@@ -95,7 +95,7 @@ data class Path(
 data class Package(
     override val location: String,
     override val path: Path,
-    val objects: List<Object>,
+    val objects: List<ClassLike>,
     override val language: Language,
     // TODO
 ) : WithLocation
@@ -109,7 +109,8 @@ enum class Language {
 /** Possible visibilities for a serializable [WithVisibility]. */
 @Serializable
 enum class Visibility {
-    PRIVATE, PROTECTED, PUBLIC, INTERNAL, // KT only
+    PRIVATE, PROTECTED, PUBLIC, // Common
+    INTERNAL, // KT only
     PACKAGE; // Java only
 
     companion object {
