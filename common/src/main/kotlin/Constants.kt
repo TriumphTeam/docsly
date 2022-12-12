@@ -26,5 +26,6 @@ package dev.triumphteam.doclopedia
 const val PLUGIN_NAME = "Doclopedia"
 
 const val KOTLIN = "kotlin"
+const val KOTLIN_EXTENSION = ".kt"
 const val OBJECT = "Object"
 const val WILD_CARD = "?"

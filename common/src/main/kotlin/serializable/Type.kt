@@ -47,13 +47,13 @@ data class BasicType(
 @SerialName("FUNCTION")
 data class FunctionType(
     val params: List<Type> = emptyList(),
-    val receiver: Type? = null,
+    override val receiver: Type? = null,
     val returnType: Type? = null,
     val isSuspendable: Boolean = false,
     val name: String? = null,
     val nullability: Nullability,
     override val annotations: List<Annotation> = emptyList(),
-) : Type, WithAnnotations
+) : Type, WithAnnotations, WithReceiver
 
 /** A type alias type simply holds the [alias] type and the [original] type. */
 @Serializable

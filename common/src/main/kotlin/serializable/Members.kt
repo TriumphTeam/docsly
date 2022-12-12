@@ -33,28 +33,35 @@ sealed interface Member : WithLocation, Named
 @SerialName("PROPERTY")
 data class Property(
     override val location: String,
+    override val path: String,
     override val language: Language,
     override val name: String,
     // TODO
 ) : Member
 
+/**
+ * A function.
+ * One of the main documentables of a language.
+ */
 @Serializable
 @SerialName("FUNCTION")
 data class Function(
     override val location: String,
+    override val path: String,
     override val language: Language,
     override val name: String,
     override val visibility: Visibility,
     val returnType: Type?,
-    val receiver: Type?,
+    override val receiver: Type?,
     val parameters: List<Parameter> = emptyList(),
     override val annotations: List<Annotation>,
     override val generics: List<GenericType>,
     override val modifiers: List<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : Member, Documentable, WithAnnotations, WithGenerics, WithModifiers, WithExtraDocs, WithVisibility
+) : Member, Documentable, WithAnnotations, WithGenerics, WithModifiers, WithExtraDocs, WithVisibility, WithReceiver
 
+/** A function parameter. */
 @Serializable
 data class Parameter(
     override val name: String,

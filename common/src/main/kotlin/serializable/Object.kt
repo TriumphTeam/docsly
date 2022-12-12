@@ -37,6 +37,7 @@ sealed interface Object : WithLocation, Named {
 @SerialName("CLASS")
 data class Class(
     override val location: String,
+    override val path: String,
     override val language: Language,
     override val name: String,
     val annotations: List<String> = emptyList(),
@@ -48,6 +49,7 @@ data class Class(
 @SerialName("INTERFACE")
 data class Interface(
     override val location: String,
+    override val path: String,
     override val language: Language,
     override val name: String,
     val extends: List<Interface> = emptyList(),

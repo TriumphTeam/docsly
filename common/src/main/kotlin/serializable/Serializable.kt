@@ -48,13 +48,24 @@ interface WithExtraDocs {
 
 /** Any serializable that can be linked to a specific location of a language. */
 interface WithLocation {
+    /** The URL location of the serializable. */
     val location: String
+
+    /** The virtual path of the serializable within the codebase. */
+    val path: String
+
+    /** The language the serializable was written in. */
     val language: Language
 }
 
 /** Any serializable that has a [Visibility]. */
 interface WithVisibility {
     val visibility: Visibility
+}
+
+/** Any serializable that can have a [receiver]. */
+interface WithReceiver {
+    val receiver: Type?
 }
 
 /** Any serializable that is documentable. */
@@ -70,7 +81,7 @@ interface Named {
 @Serializable
 data class Package(
     override val location: String,
-    val path: String,
+    override val path: String,
     val objects: List<Object>,
     override val language: Language,
     // TODO

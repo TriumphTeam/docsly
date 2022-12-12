@@ -25,14 +25,15 @@ package dev.triumphteam.doclopedia.renderer
 
 import dev.triumphteam.doclopedia.renderer.ext.description
 import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
+import dev.triumphteam.doclopedia.renderer.ext.formattedPath
 import dev.triumphteam.doclopedia.renderer.ext.getDocumentation
+import dev.triumphteam.doclopedia.renderer.ext.language
 import dev.triumphteam.doclopedia.renderer.ext.returnType
 import dev.triumphteam.doclopedia.renderer.ext.serialGenerics
 import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
 import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
 import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.Function
-import dev.triumphteam.doclopedia.serializable.Language
 import dev.triumphteam.doclopedia.serializable.Parameter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -46,7 +47,6 @@ import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
 import org.jetbrains.dokka.model.DClasslike
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.model.DPackage
-import org.jetbrains.dokka.model.WithSources
 import org.jetbrains.dokka.pages.MemberPageNode
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
@@ -98,10 +98,7 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
     private fun renderClass(classDoc: DClasslike, locationProvider: LocationProvider) {
         // TODO: 10/12/2022 RENDER REST OF CLASS THINGS
         classDoc.functions.forEach {
-            val test = renderFunction(it, locationProvider)
-            println(
-                Json.encodeToString(test)
-            )
+            println(Json.encodeToString(renderFunction(it, locationProvider)))
         }
     }
 
@@ -123,6 +120,7 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
 
         return Function(
             location = locationProvider.expectedLocationForDri(function.dri),
+            path = function.dri.formattedPath(),
             language = function.language,
             name = function.name,
             visibility = function.finalVisibility,
@@ -137,7 +135,3 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
         )
     }
 }
-
-/** Small hack to get the language of the documentable we're currently serializing. */
-private val WithSources.language: Language
-    get() = if (sources.values.firstOrNull()?.path?.endsWith(".kt", true) == true) Language.KOTLIN else Language.JAVA
