@@ -24,6 +24,7 @@
 package dev.triumphteam.doclopedia.renderer
 
 import dev.triumphteam.doclopedia.renderer.ext.description
+import dev.triumphteam.doclopedia.renderer.ext.extraModifiers
 import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
 import dev.triumphteam.doclopedia.renderer.ext.formattedPath
 import dev.triumphteam.doclopedia.renderer.ext.getDocumentation
@@ -34,8 +35,12 @@ import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
 import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
 import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.Function
+import dev.triumphteam.doclopedia.serializable.Modifier
 import dev.triumphteam.doclopedia.serializable.Parameter
+import dev.triumphteam.doclopedia.serializable.Property
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
@@ -47,7 +52,7 @@ import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
 import org.jetbrains.dokka.model.DClasslike
 import org.jetbrains.dokka.model.DFunction
 import org.jetbrains.dokka.model.DPackage
-import org.jetbrains.dokka.pages.MemberPageNode
+import org.jetbrains.dokka.model.DProperty
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
 import org.jetbrains.dokka.pages.PageNode
@@ -56,8 +61,11 @@ import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.plugability.plugin
 import org.jetbrains.dokka.plugability.querySingle
 import org.jetbrains.dokka.renderers.Renderer
+import kotlin.coroutines.CoroutineContext
 
-class JsonRenderer(private val context: DokkaContext) : Renderer {
+class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope {
+
+    override val coroutineContext: CoroutineContext = Dispatchers.IO
 
     override fun render(root: RootPageNode) {
         runBlocking(Dispatchers.Default) {
@@ -70,42 +78,63 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
 
         val locationProvider =
             context.plugin<DokkaBase>().querySingle { locationProviderFactory }.getLocationProvider(root)
+        val contentBuilder = ContentBuilder()
 
         coroutineScope {
-            root.children.filterIsInstance<PackagePageNode>().forEach { packagePageNode ->
+            root.children.filterIsInstance<PackagePageNode>().mapNotNull { packagePageNode ->
 
-                val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@forEach
+                val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@mapNotNull null
 
-                packageDoc.classlikes.forEach { renderClass(it, locationProvider) }
+                packageDoc.classlikes.forEach { renderClass(it, locationProvider, contentBuilder) }
 
-                packageDoc.functions.forEach {
-                    println("TOP LEVEL FUN -> ${it.name}")
-                    // TODO: 10/12/2022 RENDER TOP LEVEL FUNCS 
-                }
+                packageDoc.functions.forEach { it.render(locationProvider) }
 
                 packageDoc.properties.forEach {
                     println("TOP LEVEL PROPERTY -> ${it.name}")
                     // TODO: 10/12/2022 RENDER TOP LEVEL PROPERTIES
                 }
             }
+
+            println(Json.encodeToString(contentBuilder.build()))
         }
     }
 
-    private fun render(node: MemberPageNode) {
-        println("Rendering a top level function -> ${node.name}")
-    }
-
-    private fun renderClass(classDoc: DClasslike, locationProvider: LocationProvider) {
+    private fun renderClass(classDoc: DClasslike, locationProvider: LocationProvider, contentBuilder: ContentBuilder) {
         // TODO: 10/12/2022 RENDER REST OF CLASS THINGS
-        classDoc.functions.forEach {
-            println(Json.encodeToString(renderFunction(it, locationProvider)))
-        }
+        classDoc.functions.forEach { contentBuilder.append(it.render(locationProvider)) }
+        classDoc.properties.forEach { contentBuilder.append(it.render(locationProvider)) }
+    }
+
+    private fun DProperty.render(locationProvider: LocationProvider): Property {
+        // TODO: Better exception
+        val propertyType = type.toSerialType()
+            ?: throw ClassNotFoundException("Could not resolve the correct type for property \"$name\".")
+
+        val modifier = modifier.values.mapNotNull { Modifier.fromString(it.name) }
+
+        // Appending the new element to the final content list
+        return Property(
+            location = locationProvider.expectedLocationForDri(dri),
+            path = dri.formattedPath(),
+            language = language,
+            name = name,
+            visibility = finalVisibility,
+            type = propertyType,
+            getter = this.getter?.render(locationProvider),
+            setter = this.setter?.render(locationProvider),
+            receiver = receiver?.type?.toSerialType(),
+            annotations = annotations().toSerialAnnotations(),
+            generics = serialGenerics,
+            modifiers = modifier.plus(modifiers().toSerialModifiers().plus(extraModifiers)),
+            documentation = description,
+            extraDocumentation = getDocumentation(),
+        )
     }
 
     /** Renders all of a [DFunction] into the serializable [Function] type. */
-    private fun renderFunction(function: DFunction, locationProvider: LocationProvider): Function {
+    private fun DFunction.render(locationProvider: LocationProvider): Function {
         // Gathering all parameters for the function
-        val parameters = function.parameters.mapNotNull { parameter ->
+        val parameters = parameters.mapNotNull { parameter ->
             val name = parameter.name ?: return@mapNotNull null
             val type = parameter.type.toSerialType() ?: return@mapNotNull null
 
@@ -119,19 +148,23 @@ class JsonRenderer(private val context: DokkaContext) : Renderer {
         }
 
         return Function(
-            location = locationProvider.expectedLocationForDri(function.dri),
-            path = function.dri.formattedPath(),
-            language = function.language,
-            name = function.name,
-            visibility = function.finalVisibility,
-            returnType = function.returnType,
-            receiver = function.receiver?.type?.toSerialType(),
+            location = locationProvider.expectedLocationForDri(dri),
+            path = dri.formattedPath(),
+            language = language,
+            name = name,
+            visibility = finalVisibility,
+            type = returnType,
+            receiver = receiver?.type?.toSerialType(),
             parameters = parameters,
-            annotations = function.annotations().toSerialAnnotations(),
-            generics = function.serialGenerics,
-            modifiers = function.modifiers().toSerialModifiers(),
-            documentation = function.description,
-            extraDocumentation = function.getDocumentation(),
+            annotations = annotations().toSerialAnnotations(),
+            generics = serialGenerics,
+            modifiers = modifiers().toSerialModifiers().plus(this.extraModifiers),
+            documentation = description,
+            extraDocumentation = getDocumentation(),
         )
     }
 }
+
+context(CoroutineScope)
+private suspend inline fun <T, R> Iterable<T>.asyncMap(crossinline transform: (T) -> R) =
+    map { async { transform(it) } }.map { it.await() }

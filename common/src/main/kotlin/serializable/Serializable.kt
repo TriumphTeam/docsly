@@ -23,6 +23,7 @@
  */
 package dev.triumphteam.doclopedia.serializable
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /** Any serializable that has [Annotation]s. */
@@ -47,12 +48,13 @@ interface WithExtraDocs {
 }
 
 /** Any serializable that can be linked to a specific location of a language. */
-interface WithLocation {
+@Serializable
+sealed interface WithLocation {
     /** The URL location of the serializable. */
     val location: String
 
     /** The virtual path of the serializable within the codebase. */
-    val path: String
+    val path: Path
 
     /** The language the serializable was written in. */
     val language: Language
@@ -68,6 +70,11 @@ interface WithReceiver {
     val receiver: Type?
 }
 
+/** Any serializable that can have a [type]. */
+interface WithType<T : Type?> {
+    val type: T
+}
+
 /** Any serializable that is documentable. */
 interface Documentable {
     val documentation: DescriptionDocumentation?
@@ -79,9 +86,15 @@ interface Named {
 }
 
 @Serializable
+data class Path(
+    @SerialName("package") val packagePath: String?,
+    @SerialName("class") val classPath: String?,
+)
+
+@Serializable
 data class Package(
     override val location: String,
-    override val path: String,
+    override val path: Path,
     val objects: List<Object>,
     override val language: Language,
     // TODO
@@ -90,17 +103,13 @@ data class Package(
 /** Possible documentation languages. */
 @Serializable
 enum class Language {
-    KOTLIN,
-    JAVA;
+    KOTLIN, JAVA;
 }
 
 /** Possible visibilities for a serializable [WithVisibility]. */
 @Serializable
 enum class Visibility {
-    PRIVATE,
-    PROTECTED,
-    PUBLIC,
-    INTERNAL, // KT only
+    PRIVATE, PROTECTED, PUBLIC, INTERNAL, // KT only
     PACKAGE; // Java only
 
     companion object {
@@ -115,39 +124,13 @@ enum class Visibility {
 @Serializable
 enum class Modifier(val displayName: String? = null) {
     // KOTLIN ONLY
-    INLINE,
-    VALUE,
-    INFIX,
-    EXTERNAL,
-    SUSPEND,
-    REIFIED,
-    CROSSINLINE,
-    NOINLINE,
-    OVERRIDE,
-    DATA,
-    CONST,
-    INNER,
-    LATEINIT,
-    OPERATOR,
-    TAILREC,
-    VARARG,
+    INLINE, VALUE, INFIX, EXTERNAL, SUSPEND, REIFIED, CROSSINLINE, NOINLINE, OVERRIDE, DATA, CONST, INNER, LATEINIT, OPERATOR, TAILREC, VARARG,
 
     // JAVA ONLY
-    STATIC,
-    NATIVE,
-    SYNCHRONIZED,
-    STRICTFP,
-    TRANSIENT,
-    VOLATILE,
-    TRANSITIVE,
-    RECORD,
-    NONSEALED("non-sealed"),
+    STATIC, NATIVE, SYNCHRONIZED, STRICTFP, TRANSIENT, VOLATILE, TRANSITIVE, RECORD, NONSEALED("non-sealed"),
 
     // COMMON
-    OPEN,
-    FINAL,
-    ABSTRACT,
-    SEALED;
+    OPEN, FINAL, ABSTRACT, SEALED;
 
     companion object {
         private val MAPPED_VALUES = values().associateBy { it.displayName ?: it.name.lowercase() }

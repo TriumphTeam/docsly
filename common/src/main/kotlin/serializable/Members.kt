@@ -27,31 +27,46 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Member : WithLocation, Named
+sealed interface Member : WithLocation, Named, Documentable, WithVisibility, WithExtraDocs, WithModifiers, WithGenerics,
+    WithAnnotations, WithReceiver
 
+/**
+ * A property!
+ * Java fields are also considered "properties" here, but fast simpler.
+ */
 @Serializable
 @SerialName("PROPERTY")
 data class Property(
     override val location: String,
-    override val path: String,
+    override val path: Path,
     override val language: Language,
     override val name: String,
-    // TODO
-) : Member
+    override val visibility: Visibility,
+    @SerialName("class") override val type: Type,
+    override val receiver: Type?,
+    val getter: Function?,
+    val setter: Function?,
+    override val annotations: List<Annotation>,
+    override val generics: List<GenericType>,
+    override val modifiers: List<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+) : Member, WithType<Type>
 
 /**
- * A function.
+ * A function!
+ * Java methods are also considered "functions" here.
  * One of the main documentables of a language.
  */
 @Serializable
 @SerialName("FUNCTION")
 data class Function(
     override val location: String,
-    override val path: String,
+    override val path: Path,
     override val language: Language,
     override val name: String,
     override val visibility: Visibility,
-    val returnType: Type?,
+    @SerialName("class") override val type: Type?,
     override val receiver: Type?,
     val parameters: List<Parameter> = emptyList(),
     override val annotations: List<Annotation>,
@@ -59,7 +74,7 @@ data class Function(
     override val modifiers: List<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : Member, Documentable, WithAnnotations, WithGenerics, WithModifiers, WithExtraDocs, WithVisibility, WithReceiver
+) : Member, WithType<Type?>
 
 /** A function parameter. */
 @Serializable

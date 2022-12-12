@@ -59,6 +59,8 @@ import org.jetbrains.dokka.model.UnresolvedBound
 import org.jetbrains.dokka.model.Void
 import org.jetbrains.dokka.model.WithGenerics
 
+private val DEFAULT_CONSTRAINT = BasicType(type = "Any", nullability = Nullability.NULLABLE)
+
 /** The return type of the function. */
 val DFunction.returnType: Type?
     get() = when {
@@ -73,7 +75,7 @@ val WithGenerics.serialGenerics: List<GenericType>
     get() = generics.map {
         GenericType(
             name = it.name,
-            constraints = it.bounds.mapNotNull(Bound::toSerialType),
+            constraints = it.bounds.mapNotNull(Bound::toSerialType).filterNot(DEFAULT_CONSTRAINT::equals),
             modifiers = it.modifiers().toSerialModifiers(),
         )
     }

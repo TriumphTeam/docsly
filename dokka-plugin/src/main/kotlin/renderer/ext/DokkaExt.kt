@@ -26,16 +26,25 @@ package dev.triumphteam.doclopedia.renderer.ext
 import dev.triumphteam.doclopedia.KOTLIN_EXTENSION
 import dev.triumphteam.doclopedia.serializable.Language
 import dev.triumphteam.doclopedia.serializable.Modifier
+import dev.triumphteam.doclopedia.serializable.Path
 import dev.triumphteam.doclopedia.serializable.Visibility
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.links.DRI
+import org.jetbrains.dokka.model.AdditionalModifiers
+import org.jetbrains.dokka.model.Documentable
 import org.jetbrains.dokka.model.ExtraModifiers
 import org.jetbrains.dokka.model.WithSources
 import org.jetbrains.dokka.model.WithVisibility
+import org.jetbrains.dokka.model.properties.WithExtraProperties
 
 /** Simple extension to turn Dokka modifiers into serializable ones. */
 fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers() =
     values.flatten().mapNotNull { Modifier.fromString(it.name) }
+
+val <T : Documentable> WithExtraProperties<T>.extraModifiers: List<Modifier>
+    get() = extra[AdditionalModifiers]?.content?.values?.flatMap { set ->
+        set.mapNotNull { Modifier.fromString(it.name) }
+    } ?: emptyList()
 
 /** Simple extension get the final visibility of a [WithVisibility] documentable. */
 val WithVisibility.finalVisibility: Visibility
@@ -49,10 +58,7 @@ val WithSources.language: Language
         ) == true
     ) Language.KOTLIN else Language.JAVA
 
-fun DRI.formattedPath(function: Boolean = true): String {
-    val packagePath = packageName ?: ""
-    val classPath = classNames?.replace('.', '$') ?: ""
-    val separator = if (function) "#" else "$"
-
-    return "$packagePath.$classPath$separator${callable?.name}"
-}
+fun DRI.formattedPath(): Path = Path(
+    packageName,
+    classNames?.replace('.', '$')
+)

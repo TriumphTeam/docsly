@@ -37,6 +37,19 @@ tasks {
         kotlinOptions {
             jvmTarget = "1.8"
             javaParameters = true
+            freeCompilerArgs = listOf(
+                "-Xcontext-receivers",
+                "-opt-in=" + listOf(
+                    "kotlin.RequiresOptIn",
+                    "kotlin.time.ExperimentalTime",
+                    "kotlin.io.path.ExperimentalPathApi",
+                    "kotlin.io.path.ExperimentalSerializationApi",
+                    "kotlin.ExperimentalStdlibApi",
+                    "kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "kotlinx.serialization.InternalSerializationApi",
+                    "kotlinx.serialization.ExperimentalSerializationApi",
+                ).joinToString(","),
+            )
         }
     }
 }
