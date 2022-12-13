@@ -59,4 +59,4 @@ val WithSources.language: Language
     ) Language.KOTLIN else Language.JAVA
 
 /** Gets the actual path from a [DRI] object. */
-fun DRI.toPath(): Path = Path(packageName, classNames?.replace('.', '$'))
+fun DRI.toPath(): Path = Path(packageName, classNames?.split('.'))

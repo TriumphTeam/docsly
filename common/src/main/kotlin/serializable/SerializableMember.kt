@@ -96,7 +96,7 @@ data class SerializableTypeAlias(
     override val language: Language,
     override val name: String,
     @SerialName("class") override val type: SerializableType,
-    @SerialName("underlying-class") val underlyingType: SerializableType,
+    @SerialName("underlyingClass") val underlyingType: SerializableType,
     override val visibility: Visibility,
     override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,

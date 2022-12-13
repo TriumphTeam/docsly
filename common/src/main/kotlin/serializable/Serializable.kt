@@ -43,8 +43,8 @@ sealed interface DocElementWithLanguage : DocElement, WithLanguage
 /** Contains information about the [DocElement]'s path. */
 @Serializable
 data class Path(
-    @SerialName("package") val packagePath: String?,
-    @SerialName("class") val classPath: String?,
+    val packagePath: String?,
+    val classPath: List<String>?,
 )
 
 @Serializable
