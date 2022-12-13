@@ -48,7 +48,6 @@ import dev.triumphteam.doclopedia.serializable.SerializableProperty
 import dev.triumphteam.doclopedia.serializable.SuperType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
