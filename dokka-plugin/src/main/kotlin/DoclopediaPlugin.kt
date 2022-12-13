@@ -30,6 +30,7 @@ import org.jetbrains.dokka.plugability.DokkaPlugin
 
 class DoclopediaPlugin : DokkaPlugin() {
 
+    val locationProviderFactory by lazy { dokkaBase.locationProviderFactory }
     private val dokkaBase by lazy { plugin<DokkaBase>() }
 
     val renderer by extending {

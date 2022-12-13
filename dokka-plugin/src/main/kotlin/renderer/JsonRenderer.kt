@@ -23,6 +23,7 @@
  */
 package dev.triumphteam.doclopedia.renderer
 
+import dev.triumphteam.doclopedia.DoclopediaPlugin
 import dev.triumphteam.doclopedia.renderer.ext.description
 import dev.triumphteam.doclopedia.renderer.ext.extraModifiers
 import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
@@ -75,7 +76,6 @@ import org.jetbrains.dokka.model.WithConstructors
 import org.jetbrains.dokka.model.WithSupertypes
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
-import org.jetbrains.dokka.pages.PageNode
 import org.jetbrains.dokka.pages.RootPageNode
 import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.plugability.plugin
@@ -83,28 +83,49 @@ import org.jetbrains.dokka.plugability.querySingle
 import org.jetbrains.dokka.renderers.Renderer
 import kotlin.coroutines.CoroutineContext
 
-class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope {
+class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 
+    private val outputWriter = context.plugin<DokkaBase>().querySingle { outputWriter }
+    private val locationProviderFactory = context.plugin<DoclopediaPlugin>().querySingle { locationProviderFactory }
+
+    // Main json instance for serializing
+    private val json = Json {
+        prettyPrint = true
+        explicitNulls = false
+    }
+
     override fun render(root: RootPageNode) {
+        // TODO: Preprocessors the right way
+
         runBlocking(Dispatchers.Default) {
-            renderModule(root)
+            renderRoot(root)
         }
     }
 
-    private suspend fun renderModule(root: PageNode) {
+    private suspend fun renderRoot(root: RootPageNode) {
+        // For now only one module at a time, multi-module can be done later
         if (root !is ModulePageNode) return
 
-        val locationProvider =
-            context.plugin<DokkaBase>().querySingle { locationProviderFactory }.getLocationProvider(root)
-        val contentBuilder = ContentBuilder()
+        // The location provider, is used to gather the final HTML link a normal doc would produce
+        val locationProvider = locationProviderFactory.getLocationProvider(root)
 
         coroutineScope {
-            root.children.filterIsInstance<PackagePageNode>().mapNotNull { packagePageNode ->
+            // Content builder for final module serialization
+            val contentBuilder = ContentBuilder()
 
-                val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@mapNotNull null
+            // Gathering all packages from modules
+            val packages = root.children.flatMap {
+                when (it) {
+                    is ModulePageNode -> it.children.filterIsInstance<PackagePageNode>()
+                    is PackagePageNode -> listOf(it)
+                    else -> emptyList()
+                }
+            }.mapNotNull { it.documentables.firstOrNull() as? DPackage }
 
+            // Collecting content from packages
+            packages.forEach { packageDoc ->
                 with(packageDoc) {
                     // Main package classes
                     classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
@@ -129,7 +150,7 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
                 }
             }
 
-            println(Json.encodeToString(contentBuilder.build().associateBy { it.name }))
+            outputWriter.write(root.name, json.encodeToString(contentBuilder.build()), ".json")
         }
     }
 
@@ -160,7 +181,7 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
     /** Renders all the [ClassLike] and return themselves, but meanwhile appends all its children into the [ContentBuilder]. */
     private fun DClasslike.render(locationProvider: LocationProvider, contentBuilder: ContentBuilder): ClassLike {
         // Append all the children before appending itself
-        functions.forEach { contentBuilder.append(it.render(locationProvider)) }
+        functions.forEach { contentBuilder.append(it.render(locationProvider, this is DInterface)) }
         properties.forEach { contentBuilder.append(it.render(locationProvider)) }
         classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
 
@@ -278,7 +299,10 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
     }
 
     /** Renders all of a [DFunction] into the serializable [SerializableFunction] type. */
-    private fun DFunction.render(locationProvider: LocationProvider): SerializableFunction {
+    private fun DFunction.render(
+        locationProvider: LocationProvider,
+        isParentInterface: Boolean = false,
+    ): SerializableFunction {
         // Gathering all parameters for the function
         val parameters = parameters.mapNotNull { parameter ->
             val name = parameter.name ?: return@mapNotNull null
@@ -293,6 +317,16 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             )
         }
 
+        val language = language
+        val oldModifiers = mainModifier.plus(modifiers().toSerialModifiers().plus(this.extraModifiers)).toSet()
+
+        // For Java an open method on an interface is a default method
+        val modifiers = if (language == Language.JAVA && isParentInterface && oldModifiers.contains(Modifier.OPEN)) {
+            oldModifiers.minus(Modifier.OPEN).plus(Modifier.DEFAULT)
+        } else {
+            oldModifiers
+        }
+
         return SerializableFunction(
             location = locationProvider.expectedLocationForDri(dri),
             path = dri.toPath(),
@@ -304,7 +338,7 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             parameters = parameters,
             annotations = annotations().toSerialAnnotations(),
             generics = serialGenerics,
-            modifiers = mainModifier.plus(modifiers().toSerialModifiers().plus(this.extraModifiers)).toSet(),
+            modifiers = modifiers,
             documentation = description,
             extraDocumentation = getDocumentation(),
         )
