@@ -23,6 +23,11 @@
  */
 package dev.triumphteam.doclopedia.serializable
 
+/** The language the serializable was written in. */
+interface WithLanguage {
+    val language: Language
+}
+
 /** Any serializable that has [SerializableAnnotation]s. */
 interface WithAnnotations {
     val annotations: List<SerializableAnnotation>

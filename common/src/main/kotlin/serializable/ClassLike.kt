@@ -28,7 +28,7 @@ import kotlinx.serialization.Serializable
 
 /** A [ClassLike] represents any element that behaves like a Class. */
 @Serializable
-sealed interface ClassLike : DocElement, WithDocumentation, WithVisibility, WithAnnotations, WithModifiers,
+sealed interface ClassLike : DocElementWithLanguage, WithDocumentation, WithVisibility, WithAnnotations, WithModifiers,
     WithExtraDocs
 
 /** A serializable object that contains all information needed to describe a class. */

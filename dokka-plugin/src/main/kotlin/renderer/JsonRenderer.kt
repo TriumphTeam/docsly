@@ -36,6 +36,7 @@ import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
 import dev.triumphteam.doclopedia.renderer.ext.toSerialType
 import dev.triumphteam.doclopedia.serializable.ClassKind
 import dev.triumphteam.doclopedia.serializable.ClassLike
+import dev.triumphteam.doclopedia.serializable.Language
 import dev.triumphteam.doclopedia.serializable.Modifier
 import dev.triumphteam.doclopedia.serializable.SerializableAnnotationClass
 import dev.triumphteam.doclopedia.serializable.SerializableClass
@@ -43,8 +44,10 @@ import dev.triumphteam.doclopedia.serializable.SerializableEnum
 import dev.triumphteam.doclopedia.serializable.SerializableFunction
 import dev.triumphteam.doclopedia.serializable.SerializableInterface
 import dev.triumphteam.doclopedia.serializable.SerializableObject
+import dev.triumphteam.doclopedia.serializable.SerializablePackage
 import dev.triumphteam.doclopedia.serializable.SerializableParameter
 import dev.triumphteam.doclopedia.serializable.SerializableProperty
+import dev.triumphteam.doclopedia.serializable.SerializableTypeAlias
 import dev.triumphteam.doclopedia.serializable.SuperType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +68,7 @@ import org.jetbrains.dokka.model.DInterface
 import org.jetbrains.dokka.model.DObject
 import org.jetbrains.dokka.model.DPackage
 import org.jetbrains.dokka.model.DProperty
+import org.jetbrains.dokka.model.DTypeAlias
 import org.jetbrains.dokka.model.PrimaryConstructorExtra
 import org.jetbrains.dokka.model.WithAbstraction
 import org.jetbrains.dokka.model.WithConstructors
@@ -101,16 +105,56 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
 
                 val packageDoc = packagePageNode.documentables.firstOrNull() as? DPackage ?: return@mapNotNull null
 
-                // Main package classes
-                packageDoc.classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
-                // Top level functions
-                packageDoc.functions.forEach { contentBuilder.append(it.render(locationProvider)) }
-                // Top level properties
-                packageDoc.properties.forEach { contentBuilder.append(it.render(locationProvider)) }
+                with(packageDoc) {
+                    // Main package classes
+                    classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
+                    // Top level functions
+                    functions.forEach { contentBuilder.append(it.render(locationProvider)) }
+                    // Top level properties
+                    properties.forEach { contentBuilder.append(it.render(locationProvider)) }
+                    // Type aliases
+                    typealiases.forEach { contentBuilder.append(it.render(locationProvider)) }
+
+                    // Appending the package itself
+                    contentBuilder.append(
+                        SerializablePackage(
+                            location = locationProvider.expectedLocationForDri(dri),
+                            path = dri.toPath(),
+                            name = name,
+                            annotations = annotations().toSerialAnnotations(),
+                            documentation = description,
+                            extraDocumentation = getDocumentation(),
+                        )
+                    )
+                }
             }
 
             println(Json.encodeToString(contentBuilder.build().associateBy { it.name }))
         }
+    }
+
+    /** Renders all of a [DTypeAlias] into the serializable [SerializableTypeAlias] type. */
+    private fun DTypeAlias.render(locationProvider: LocationProvider): SerializableTypeAlias {
+        // TODO: Better exceptions
+        val type = type.toSerialType()
+            ?: throw ClassNotFoundException("Could not resolve the correct type for typealias \"$name\".")
+
+        val underlyingType = underlyingType.values.firstOrNull()?.toSerialType()
+            ?: throw ClassNotFoundException("Could not resolve the correct type for typealias \"$name\".")
+
+        return SerializableTypeAlias(
+            location = locationProvider.expectedLocationForDri(dri),
+            path = dri.toPath(),
+            language = Language.KOTLIN, // Type alias is always Kotlin
+            name = name,
+            type = type,
+            underlyingType = underlyingType,
+            visibility = finalVisibility,
+            annotations = annotations().toSerialAnnotations(),
+            generics = serialGenerics,
+            documentation = description,
+            extraDocumentation = getDocumentation(),
+        )
     }
 
     /** Renders all the [ClassLike] and return themselves, but meanwhile appends all its children into the [ContentBuilder]. */

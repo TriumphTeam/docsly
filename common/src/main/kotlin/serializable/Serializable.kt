@@ -34,10 +34,11 @@ sealed interface DocElement : WithName {
 
     /** The virtual path of the serializable within the codebase. */
     val path: Path
-
-    /** The language the serializable was written in. */
-    val language: Language
 }
+
+/** A [DocElement] that also contains language details. */
+@Serializable
+sealed interface DocElementWithLanguage : DocElement, WithLanguage
 
 /** Contains information about the [DocElement]'s path. */
 @Serializable
@@ -47,14 +48,15 @@ data class Path(
 )
 
 @Serializable
-data class Package(
+@SerialName("PACKAGE")
+data class SerializablePackage(
     override val location: String,
     override val path: Path,
     override val name: String,
-    val objects: List<ClassLike>,
-    override val language: Language,
-    // TODO
-) : DocElement
+    override val annotations: List<SerializableAnnotation>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+) : DocElement, WithDocumentation, WithExtraDocs, WithAnnotations
 
 /** Possible documentation languages. */
 @Serializable

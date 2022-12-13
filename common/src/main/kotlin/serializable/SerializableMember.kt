@@ -28,8 +28,8 @@ import kotlinx.serialization.Serializable
 
 /** A serializable member of a [ClassLike] element. */
 @Serializable
-sealed interface SerializableMember : DocElement, WithDocumentation, WithVisibility, WithExtraDocs, WithModifiers,
-    WithGenerics, WithAnnotations, WithReceiver
+sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation, WithVisibility, WithExtraDocs, WithGenerics,
+    WithAnnotations
 
 /**
  * A property!
@@ -52,7 +52,7 @@ data class SerializableProperty(
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : SerializableMember, WithType<SerializableType>
+) : SerializableMember, WithType<SerializableType>, WithReceiver, WithModifiers
 
 /**
  * A function!
@@ -75,7 +75,7 @@ data class SerializableFunction(
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : SerializableMember, WithType<SerializableType?>
+) : SerializableMember, WithType<SerializableType?>, WithReceiver, WithModifiers
 
 /** A function parameter. */
 @Serializable
@@ -86,3 +86,20 @@ data class SerializableParameter(
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
 ) : WithAnnotations, WithModifiers, WithDocumentation, WithName
+
+/** Serializable class to represent Kotlin's `typealias`. */
+@Serializable
+@SerialName("TYPE_ALIAS")
+data class SerializableTypeAlias(
+    override val location: String,
+    override val path: Path,
+    override val language: Language,
+    override val name: String,
+    @SerialName("class") override val type: SerializableType,
+    @SerialName("underlying-class") val underlyingType: SerializableType,
+    override val visibility: Visibility,
+    override val annotations: List<SerializableAnnotation>,
+    override val generics: List<GenericType>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+) : SerializableMember, WithType<SerializableType>
