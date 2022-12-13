@@ -12,7 +12,7 @@ sealed interface Documentation {
 }
 
 /** A [Documentation] that also contains a name. */
-sealed interface NamedDocumentation : Documentation, Named
+sealed interface NamedDocumentation : Documentation, WithName
 
 /** Generally a description of a serializable. */
 @Serializable

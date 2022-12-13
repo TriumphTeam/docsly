@@ -26,30 +26,9 @@ package dev.triumphteam.doclopedia.serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** Any serializable that has [Annotation]s. */
-interface WithAnnotations {
-    val annotations: List<Annotation>
-}
-
-/** Any serializable that has [GenericType]s. */
-interface WithGenerics {
-    val generics: List<GenericType>
-}
-
-/** Any serializable that has [Modifier]s. */
-interface WithModifiers {
-    val modifiers: Set<Modifier>
-
-}
-
-/** Any serializable that has extra [Documentation]s. */
-interface WithExtraDocs {
-    val extraDocumentation: List<Documentation>
-}
-
 /** Any serializable that can be linked to a specific location of a language. */
 @Serializable
-sealed interface WithLocation : Named {
+sealed interface DocElement : WithName {
     /** The URL location of the serializable. */
     val location: String
 
@@ -60,31 +39,7 @@ sealed interface WithLocation : Named {
     val language: Language
 }
 
-/** Any serializable that has a [Visibility]. */
-interface WithVisibility {
-    val visibility: Visibility
-}
-
-/** Any serializable that can have a [receiver]. */
-interface WithReceiver {
-    val receiver: Type?
-}
-
-/** Any serializable that can have a [type]. */
-interface WithType<T : Type?> {
-    val type: T
-}
-
-/** Any serializable that is documentable. */
-interface Documentable {
-    val documentation: DescriptionDocumentation?
-}
-
-/** A serializable that has a name. */
-interface Named {
-    val name: String
-}
-
+/** Contains information about the [DocElement]'s path. */
 @Serializable
 data class Path(
     @SerialName("package") val packagePath: String?,
@@ -99,7 +54,7 @@ data class Package(
     val objects: List<ClassLike>,
     override val language: Language,
     // TODO
-) : WithLocation
+) : DocElement
 
 /** Possible documentation languages. */
 @Serializable

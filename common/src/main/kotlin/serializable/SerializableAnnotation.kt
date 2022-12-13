@@ -28,43 +28,43 @@ import kotlinx.serialization.Serializable
 
 /** A simple representation of an annotation with all its needed arguments. */
 @Serializable
-data class Annotation(
+data class SerializableAnnotation(
     @SerialName("class") val type: String,
-    val arguments: Map<String, AnnotationArgument> = emptyMap(),
+    val arguments: Map<String, SerializableAnnotationArgument> = emptyMap(),
 )
 
 // ARGUMENTS
 
 /** Represents an annotation argument. */
 @Serializable
-sealed interface AnnotationArgument
+sealed interface SerializableAnnotationArgument
 
 /** An annotation holder .. annotation. */
 @Serializable
 @SerialName("ANNOTATION")
-data class AnnotationAnnotationArgument(val value: Annotation) : AnnotationArgument
+data class AnnotationAnnotationArgument(val value: SerializableAnnotation) : SerializableAnnotationArgument
 
 /** An array annotation which has a list of arguments. */
 @Serializable
 @SerialName("ARRAY")
-data class ArrayAnnotationArgument(val value: List<AnnotationArgument>) : AnnotationArgument
+data class ArrayAnnotationArgument(val value: List<SerializableAnnotationArgument>) : SerializableAnnotationArgument
 
 /** An argument of a type, normally either class type or enum type. */
 @Serializable
 @SerialName("TYPED")
 data class TypedAnnotationArgument(
     val typeName: String,
-    val valueType: ValueType,
-) : AnnotationArgument
+    val valueType: AnnotationValueType,
+) : SerializableAnnotationArgument
 
 /** An argument holding a constant value. */
 @Serializable
 @SerialName("LITERAL")
-data class LiteralAnnotationArgument(val typeName: String) : AnnotationArgument
+data class LiteralAnnotationArgument(val typeName: String) : SerializableAnnotationArgument
 
 /** The value type for a [TypedAnnotationArgument]. */
 @Serializable
-enum class ValueType {
+enum class AnnotationValueType {
     CLASS,
     ENUM,
 }

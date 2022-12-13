@@ -26,35 +26,23 @@ package dev.triumphteam.doclopedia.serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-interface WithConstructors {
-
-    val constructors: List<Function>
-}
-
-interface WithCompanion {
-
-    val companion: ClassLike?
-}
-
-interface WithSuperTypes {
-
-    val superTypes: List<SuperType>
-}
-
+/** A [ClassLike] represents any element that behaves like a Class. */
 @Serializable
-sealed interface ClassLike : WithLocation, Documentable, WithVisibility, WithAnnotations, WithModifiers, WithExtraDocs
+sealed interface ClassLike : DocElement, WithDocumentation, WithVisibility, WithAnnotations, WithModifiers,
+    WithExtraDocs
 
+/** A serializable object that contains all information needed to describe a class. */
 @Serializable
 @SerialName("CLASS")
-data class ClassClassLike(
+data class SerializableClass(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    override val constructors: List<Function>,
+    override val constructors: List<SerializableFunction>,
     override val companion: ClassLike?,
     override val visibility: Visibility,
-    override val annotations: List<Annotation>,
+    override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
@@ -62,65 +50,69 @@ data class ClassClassLike(
     override val superTypes: List<SuperType>,
 ) : ClassLike, WithConstructors, WithCompanion, WithGenerics, WithSuperTypes
 
+/** A serializable object that contains all information needed to describe an annotation class. */
 @Serializable
 @SerialName("ANNOTATION")
-data class AnnotationClassLike(
+data class SerializableAnnotationClass(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    override val constructors: List<Function>,
+    override val constructors: List<SerializableFunction>,
     override val companion: ClassLike?,
     override val visibility: Visibility,
-    override val annotations: List<Annotation>,
+    override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
 ) : ClassLike, WithConstructors, WithCompanion, WithGenerics
 
+/** A serializable object that contains all information needed to describe an enum. */
 @Serializable
-@SerialName("Enum")
-data class EnumClassLike(
+@SerialName("ENUM")
+data class SerializableEnum(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    override val constructors: List<Function>,
+    override val constructors: List<SerializableFunction>,
     override val companion: ClassLike?,
     override val visibility: Visibility,
-    override val annotations: List<Annotation>,
+    override val annotations: List<SerializableAnnotation>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
     override val superTypes: List<SuperType>,
 ) : ClassLike, WithConstructors, WithCompanion, WithSuperTypes
 
+/** A serializable object that contains all information needed to describe an object. */
 @Serializable
 @SerialName("OBJECT")
-data class ObjectClassLike(
+data class SerializableObject(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
     override val visibility: Visibility,
-    override val annotations: List<Annotation>,
+    override val annotations: List<SerializableAnnotation>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
     override val superTypes: List<SuperType>,
 ) : ClassLike, WithSuperTypes
 
+/** A serializable object that contains all information needed to describe an interface. */
 @Serializable
 @SerialName("INTERFACE")
-data class InterfaceClassLike(
+data class SerializableInterface(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
     override val companion: ClassLike?,
     override val visibility: Visibility,
-    override val annotations: List<Annotation>,
+    override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
@@ -128,9 +120,12 @@ data class InterfaceClassLike(
     override val superTypes: List<SuperType>,
 ) : ClassLike, WithCompanion, WithGenerics, WithSuperTypes
 
+/** Due to how super types work, it is also needed to save the [kind] of supertype it is. */
 @Serializable
-data class SuperType(@SerialName("name") val type: Type, val kind: ClassKind)
+data class SuperType(@SerialName("name") val type: SerializableType, val kind: ClassKind)
 
+/** Which kind of type is being used as supertype of a [WithSuperTypes]. */
+@Serializable
 enum class ClassKind {
     CLASS, INTERFACE, ENUM_CLASS, ENUM_ENTRY, ANNOTATION_CLASS, // Common
     OBJECT; // Kt only

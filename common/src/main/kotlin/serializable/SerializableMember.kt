@@ -26,9 +26,10 @@ package dev.triumphteam.doclopedia.serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/** A serializable member of a [ClassLike] element. */
 @Serializable
-sealed interface Member : WithLocation, Documentable, WithVisibility, WithExtraDocs, WithModifiers, WithGenerics,
-    WithAnnotations, WithReceiver
+sealed interface SerializableMember : DocElement, WithDocumentation, WithVisibility, WithExtraDocs, WithModifiers,
+    WithGenerics, WithAnnotations, WithReceiver
 
 /**
  * A property!
@@ -36,22 +37,22 @@ sealed interface Member : WithLocation, Documentable, WithVisibility, WithExtraD
  */
 @Serializable
 @SerialName("PROPERTY")
-data class Property(
+data class SerializableProperty(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    val setter: Function?,
-    val getter: Function?,
+    val setter: SerializableFunction?,
+    val getter: SerializableFunction?,
     override val visibility: Visibility,
-    @SerialName("class") override val type: Type,
-    override val receiver: Type?,
-    override val annotations: List<Annotation>,
+    @SerialName("class") override val type: SerializableType,
+    override val receiver: SerializableType?,
+    override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : Member, WithType<Type>
+) : SerializableMember, WithType<SerializableType>
 
 /**
  * A function!
@@ -60,28 +61,28 @@ data class Property(
  */
 @Serializable
 @SerialName("FUNCTION")
-data class Function(
+data class SerializableFunction(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    val parameters: List<Parameter> = emptyList(),
+    val parameters: List<SerializableParameter> = emptyList(),
     override val visibility: Visibility,
-    @SerialName("class") override val type: Type?,
-    override val receiver: Type?,
-    override val annotations: List<Annotation>,
+    @SerialName("class") override val type: SerializableType?,
+    override val receiver: SerializableType?,
+    override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : Member, WithType<Type?>
+) : SerializableMember, WithType<SerializableType?>
 
 /** A function parameter. */
 @Serializable
-data class Parameter(
+data class SerializableParameter(
     override val name: String,
-    @SerialName("class") val type: Type,
-    override val annotations: List<Annotation>,
+    @SerialName("class") val type: SerializableType,
+    override val annotations: List<SerializableAnnotation>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
-) : WithAnnotations, WithModifiers, Documentable, Named
+) : WithAnnotations, WithModifiers, WithDocumentation, WithName

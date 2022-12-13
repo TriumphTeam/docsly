@@ -26,25 +26,25 @@ package dev.triumphteam.doclopedia.renderer
 import dev.triumphteam.doclopedia.renderer.ext.description
 import dev.triumphteam.doclopedia.renderer.ext.extraModifiers
 import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
-import dev.triumphteam.doclopedia.renderer.ext.formattedPath
 import dev.triumphteam.doclopedia.renderer.ext.getDocumentation
 import dev.triumphteam.doclopedia.renderer.ext.language
 import dev.triumphteam.doclopedia.renderer.ext.returnType
 import dev.triumphteam.doclopedia.renderer.ext.serialGenerics
+import dev.triumphteam.doclopedia.renderer.ext.toPath
 import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
 import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
 import dev.triumphteam.doclopedia.renderer.ext.toSerialType
-import dev.triumphteam.doclopedia.serializable.AnnotationClassLike
-import dev.triumphteam.doclopedia.serializable.ClassClassLike
 import dev.triumphteam.doclopedia.serializable.ClassKind
 import dev.triumphteam.doclopedia.serializable.ClassLike
-import dev.triumphteam.doclopedia.serializable.EnumClassLike
-import dev.triumphteam.doclopedia.serializable.Function
-import dev.triumphteam.doclopedia.serializable.InterfaceClassLike
 import dev.triumphteam.doclopedia.serializable.Modifier
-import dev.triumphteam.doclopedia.serializable.ObjectClassLike
-import dev.triumphteam.doclopedia.serializable.Parameter
-import dev.triumphteam.doclopedia.serializable.Property
+import dev.triumphteam.doclopedia.serializable.SerializableAnnotationClass
+import dev.triumphteam.doclopedia.serializable.SerializableClass
+import dev.triumphteam.doclopedia.serializable.SerializableEnum
+import dev.triumphteam.doclopedia.serializable.SerializableFunction
+import dev.triumphteam.doclopedia.serializable.SerializableInterface
+import dev.triumphteam.doclopedia.serializable.SerializableObject
+import dev.triumphteam.doclopedia.serializable.SerializableParameter
+import dev.triumphteam.doclopedia.serializable.SerializableProperty
 import dev.triumphteam.doclopedia.serializable.SuperType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -124,9 +124,9 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
         // Return itself to be appended
         return when (this) {
             is DClass -> {
-                ClassClassLike(
+                SerializableClass(
                     location = locationProvider.expectedLocationForDri(dri),
-                    path = dri.formattedPath(),
+                    path = dri.toPath(),
                     language = language,
                     name = name,
                     constructors = getConstructors(locationProvider),
@@ -142,9 +142,9 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             }
 
             is DAnnotation -> {
-                AnnotationClassLike(
+                SerializableAnnotationClass(
                     location = locationProvider.expectedLocationForDri(dri),
-                    path = dri.formattedPath(),
+                    path = dri.toPath(),
                     language = language,
                     name = name,
                     constructors = getConstructors(locationProvider),
@@ -159,9 +159,9 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             }
 
             is DEnum -> {
-                EnumClassLike(
+                SerializableEnum(
                     location = locationProvider.expectedLocationForDri(dri),
-                    path = dri.formattedPath(),
+                    path = dri.toPath(),
                     language = language,
                     name = name,
                     constructors = getConstructors(locationProvider),
@@ -176,9 +176,9 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             }
 
             is DInterface -> {
-                InterfaceClassLike(
+                SerializableInterface(
                     location = locationProvider.expectedLocationForDri(dri),
-                    path = dri.formattedPath(),
+                    path = dri.toPath(),
                     language = language,
                     name = name,
                     companion = companion?.render(locationProvider, contentBuilder),
@@ -193,9 +193,9 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             }
 
             is DObject -> {
-                ObjectClassLike(
+                SerializableObject(
                     location = locationProvider.expectedLocationForDri(dri),
-                    path = dri.formattedPath(),
+                    path = dri.toPath(),
                     language = language,
                     name = name ?: "Unknown",
                     visibility = finalVisibility,
@@ -209,15 +209,16 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
         }
     }
 
-    private fun DProperty.render(locationProvider: LocationProvider): Property {
+    /** Renders all of a [DProperty] into the serializable [SerializableProperty] type. */
+    private fun DProperty.render(locationProvider: LocationProvider): SerializableProperty {
         // TODO: Better exception
         val propertyType = type.toSerialType()
             ?: throw ClassNotFoundException("Could not resolve the correct type for property \"$name\".")
 
         // Appending the new element to the final content list
-        return Property(
+        return SerializableProperty(
             location = locationProvider.expectedLocationForDri(dri),
-            path = dri.formattedPath(),
+            path = dri.toPath(),
             language = language,
             name = name,
             visibility = finalVisibility,
@@ -233,14 +234,14 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
         )
     }
 
-    /** Renders all of a [DFunction] into the serializable [Function] type. */
-    private fun DFunction.render(locationProvider: LocationProvider): Function {
+    /** Renders all of a [DFunction] into the serializable [SerializableFunction] type. */
+    private fun DFunction.render(locationProvider: LocationProvider): SerializableFunction {
         // Gathering all parameters for the function
         val parameters = parameters.mapNotNull { parameter ->
             val name = parameter.name ?: return@mapNotNull null
             val type = parameter.type.toSerialType() ?: return@mapNotNull null
 
-            Parameter(
+            SerializableParameter(
                 name = name,
                 type = type,
                 annotations = parameter.annotations().toSerialAnnotations(),
@@ -249,9 +250,9 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
             )
         }
 
-        return Function(
+        return SerializableFunction(
             location = locationProvider.expectedLocationForDri(dri),
-            path = dri.formattedPath(),
+            path = dri.toPath(),
             language = language,
             name = name,
             visibility = finalVisibility,
@@ -266,10 +267,13 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
         )
     }
 
-    private fun WithConstructors.getConstructors(locationProvider: LocationProvider): List<Function> = constructors
-        .sortedBy { if (it.extra[PrimaryConstructorExtra] != null) 0 else 1 } // Make sure primary is always first
-        .map { it.render(locationProvider) }
+    /** Simpler way to get the constructors, the primary constructor will always be the first. */
+    private fun WithConstructors.getConstructors(locationProvider: LocationProvider): List<SerializableFunction> =
+        constructors
+            .sortedBy { if (it.extra[PrimaryConstructorExtra] != null) 0 else 1 } // Make sure primary is always first
+            .map { it.render(locationProvider) }
 
+    /** Simpler way to get the super types. */
     private fun WithSupertypes.getSuperTypes() = supertypes.values.firstOrNull()?.mapNotNull {
         val type = it.typeConstructor.toSerialType() ?: return@mapNotNull null
         val kind = ClassKind.fromString(it.kind.toString()) ?: return@mapNotNull null
@@ -277,10 +281,7 @@ class JsonRenderer(private val context: DokkaContext) : Renderer, CoroutineScope
         SuperType(type, kind)
     } ?: emptyList()
 
+    /** Simpler way to get the main modifier. */
     private val WithAbstraction.mainModifier
         get() = modifier.values.mapNotNull { Modifier.fromString(it.name) }
 }
-
-context(CoroutineScope)
-private suspend inline fun <T, R> Iterable<T>.asyncMap(crossinline transform: (T) -> R) =
-    map { async { transform(it) } }.map { it.await() }

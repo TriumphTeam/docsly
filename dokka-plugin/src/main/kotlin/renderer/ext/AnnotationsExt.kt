@@ -23,13 +23,13 @@
  */
 package dev.triumphteam.doclopedia.renderer.ext
 
-import dev.triumphteam.doclopedia.serializable.Annotation
 import dev.triumphteam.doclopedia.serializable.AnnotationAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.AnnotationArgument
+import dev.triumphteam.doclopedia.serializable.AnnotationValueType
 import dev.triumphteam.doclopedia.serializable.ArrayAnnotationArgument
 import dev.triumphteam.doclopedia.serializable.LiteralAnnotationArgument
+import dev.triumphteam.doclopedia.serializable.SerializableAnnotation
+import dev.triumphteam.doclopedia.serializable.SerializableAnnotationArgument
 import dev.triumphteam.doclopedia.serializable.TypedAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.ValueType
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.model.AnnotationParameterValue
 import org.jetbrains.dokka.model.AnnotationValue
@@ -43,18 +43,18 @@ import org.jetbrains.dokka.model.LiteralValue
 fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.toSerialAnnotations() =
     values.flatten().filter(Annotations.Annotation::mustBeDocumented).mapNotNull(Annotations.Annotation::mapAnnotation)
 
-/** Maps the [Annotations.Annotation] into the serializable [Annotation]. */
-private fun Annotations.Annotation.mapAnnotation(): Annotation? {
+/** Maps the [Annotations.Annotation] into the serializable [SerializableAnnotation]. */
+private fun Annotations.Annotation.mapAnnotation(): SerializableAnnotation? {
     val type = dri.classNames ?: return null
 
     /** Local function to simplify recursion. */
-    fun AnnotationParameterValue.mapParams(): AnnotationArgument? {
+    fun AnnotationParameterValue.mapParams(): SerializableAnnotationArgument? {
         return when (this) {
             is LiteralValue -> LiteralAnnotationArgument(text())
             is AnnotationValue -> annotation.mapAnnotation()?.let(::AnnotationAnnotationArgument)
             is ArrayValue -> ArrayAnnotationArgument(value.mapNotNull(AnnotationParameterValue::mapParams))
-            is ClassValue -> TypedAnnotationArgument(className, ValueType.CLASS)
-            is EnumValue -> TypedAnnotationArgument(enumName, ValueType.ENUM)
+            is ClassValue -> TypedAnnotationArgument(className, AnnotationValueType.CLASS)
+            is EnumValue -> TypedAnnotationArgument(enumName, AnnotationValueType.ENUM)
         }
     }
 
@@ -62,5 +62,5 @@ private fun Annotations.Annotation.mapAnnotation(): Annotation? {
         value.mapParams()?.let { key to it }
     }.toMap()
 
-    return Annotation(type, arguments)
+    return SerializableAnnotation(type, arguments)
 }

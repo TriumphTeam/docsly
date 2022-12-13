@@ -32,8 +32,8 @@ import dev.triumphteam.doclopedia.serializable.FunctionType
 import dev.triumphteam.doclopedia.serializable.GenericProjection
 import dev.triumphteam.doclopedia.serializable.GenericType
 import dev.triumphteam.doclopedia.serializable.Nullability
+import dev.triumphteam.doclopedia.serializable.SerializableType
 import dev.triumphteam.doclopedia.serializable.StarType
-import dev.triumphteam.doclopedia.serializable.Type
 import dev.triumphteam.doclopedia.serializable.TypeAliasType
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
@@ -59,10 +59,11 @@ import org.jetbrains.dokka.model.UnresolvedBound
 import org.jetbrains.dokka.model.Void
 import org.jetbrains.dokka.model.WithGenerics
 
+/** By default, Kotlin's constraint is nullable [Any], which we can always ignore. */
 private val DEFAULT_CONSTRAINT = BasicType(type = "Any", nullability = Nullability.NULLABLE)
 
 /** The return type of the function. */
-val DFunction.returnType: Type?
+val DFunction.returnType: SerializableType?
     get() = when {
         isConstructor -> null
         type is TypeConstructor && (type as TypeConstructor).dri == DriOfUnit -> null
@@ -84,7 +85,7 @@ val WithGenerics.serialGenerics: List<GenericType>
 fun Projection.toSerialType(
     projection: GenericProjection? = null,
     nullability: Nullability = Nullability.NOT_NULL,
-): Type? {
+): SerializableType? {
     return when (this) {
         // Generic `in`
         is Contravariance<*> -> inner.toSerialType(GenericProjection.IN, nullability)
@@ -134,6 +135,7 @@ fun Projection.toSerialType(
             nullability = nullability,
             annotations = annotations().toSerialAnnotations()
         )
+
         // TODO: Honestly I have no idea what to do with this one
         is UnresolvedBound -> null
         // TODO: Honestly I have no idea what to do with this one either
@@ -142,7 +144,10 @@ fun Projection.toSerialType(
 }
 
 /** Turns the [GenericTypeConstructor] into a [BasicType]. */
-private fun GenericTypeConstructor.toBasicType(projection: GenericProjection?, nullability: Nullability): Type? {
+private fun GenericTypeConstructor.toBasicType(
+    projection: GenericProjection?,
+    nullability: Nullability,
+): SerializableType? {
     val type = dri.classNames ?: return null
     val params = projections.mapNotNull { it.toSerialType() }
     return BasicType(
@@ -159,7 +164,7 @@ private fun GenericTypeConstructor.toBasicType(projection: GenericProjection?, n
 private fun FunctionalTypeConstructor.toFunctionalType(
     projection: GenericProjection?,
     nullability: Nullability,
-): Type? {
+): SerializableType? {
     val pkg = dri.packageName ?: return null
     if (KOTLIN in pkg) {
         // KT fun
