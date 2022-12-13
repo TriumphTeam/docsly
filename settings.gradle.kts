@@ -9,6 +9,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 listOf(
     "dokka-plugin",
+    "gradle-plugin",
     "common",
 ).forEach(::includeProject)
 
