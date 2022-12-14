@@ -21,37 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package template
+package dev.triumphteam.doclopedia
 
-import junit.framework.Assert.assertNotNull
-import org.jetbrains.dokka.base.testApi.testRunner.BaseAbstractTest
-import org.junit.Test
+import dev.triumphteam.doclopedia.renderer.JsonRenderer
+import org.jetbrains.dokka.CoreExtensions
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.plugability.DokkaPlugin
 
-class MyAwesomePluginTest : BaseAbstractTest() {
-    private val configuration = dokkaConfiguration {
-        sourceSets {
-            sourceSet {
-                sourceRoots = listOf("src/main/kotlin")
-            }
-        }
-    }
+class DoclopediaDokkaPlugin : DokkaPlugin() {
 
-    @Test
-    fun `my awesome plugin should find packages and classes`() {
-        testInline(
-            """
-            |/src/main/kotlin/sample/Test.kt
-            |package sample
-            |data class TestingIsEasy(val reason: String)
-            """.trimIndent(), configuration
-        ) {
-            documentablesTransformationStage = { module ->
-                val testedPackage = module.packages.find { it.name == "sample" }
-                val testedClass = testedPackage?.classlikes?.find { it.name == "TestingIsEasy" }
+    val locationProviderFactory by lazy { dokkaBase.locationProviderFactory }
+    private val dokkaBase by lazy { plugin<DokkaBase>() }
 
-                assertNotNull(testedPackage)
-                assertNotNull(testedClass)
-            }
-        }
+    val renderer by extending {
+        CoreExtensions.renderer providing ::JsonRenderer override dokkaBase.htmlRenderer
     }
 }

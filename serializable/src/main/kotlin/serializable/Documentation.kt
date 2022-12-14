@@ -23,15 +23,14 @@
  */
 package dev.triumphteam.doclopedia.serializable
 
-import dev.triumphteam.doclopedia.component.Component
-import dev.triumphteam.doclopedia.component.RootComponent
+import dev.triumphteam.doclopedia.serializable.component.RootComponent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** A [Documentation] simply has its display [Component]. */
+/** A [Documentation] simply has its display [RootComponent]. */
 @Serializable
 sealed interface Documentation {
-    val component: Component
+    val component: RootComponent
 }
 
 /** A [Documentation] that also contains a name. */

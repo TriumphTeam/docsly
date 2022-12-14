@@ -8,5 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
+    compileOnly(libs.gradle.dokka)
+    compileOnly(libs.gradle.kotlin)
+    compileOnly(gradleApi())
+    compileOnly(gradleKotlinDsl())
 }

@@ -23,17 +23,17 @@
  */
 package dev.triumphteam.doclopedia.renderer.ext
 
-import dev.triumphteam.doclopedia.component.CodeBlockComponent
-import dev.triumphteam.doclopedia.component.CodeInlineComponent
-import dev.triumphteam.doclopedia.component.Component
-import dev.triumphteam.doclopedia.component.DocumentationLinkComponent
-import dev.triumphteam.doclopedia.component.EmphasisComponent
-import dev.triumphteam.doclopedia.component.ParagraphComponent
-import dev.triumphteam.doclopedia.component.RootComponent
-import dev.triumphteam.doclopedia.component.StrikethroughComponent
-import dev.triumphteam.doclopedia.component.StrongEmphasisComponent
-import dev.triumphteam.doclopedia.component.TextComponent
-import dev.triumphteam.doclopedia.component.UnderlinedComponent
+import dev.triumphteam.doclopedia.serializable.component.CodeBlockComponent
+import dev.triumphteam.doclopedia.serializable.component.CodeInlineComponent
+import dev.triumphteam.doclopedia.serializable.component.Component
+import dev.triumphteam.doclopedia.serializable.component.DocumentationLinkComponent
+import dev.triumphteam.doclopedia.serializable.component.EmphasisComponent
+import dev.triumphteam.doclopedia.serializable.component.ParagraphComponent
+import dev.triumphteam.doclopedia.serializable.component.RootComponent
+import dev.triumphteam.doclopedia.serializable.component.StrikethroughComponent
+import dev.triumphteam.doclopedia.serializable.component.StrongEmphasisComponent
+import dev.triumphteam.doclopedia.serializable.component.TextComponent
+import dev.triumphteam.doclopedia.serializable.component.UnderlinedComponent
 import dev.triumphteam.doclopedia.serializable.AuthorDocumentation
 import dev.triumphteam.doclopedia.serializable.CustomDocumentation
 import dev.triumphteam.doclopedia.serializable.DeprecatedDocumentation

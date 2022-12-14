@@ -9,4 +9,5 @@ dependencies {
     implementation(libs.build.kotlin)
     implementation(libs.build.serialization)
     implementation(libs.build.license)
+    implementation(libs.build.dokka)
 }

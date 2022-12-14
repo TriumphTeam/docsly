@@ -23,7 +23,7 @@
  */
 package dev.triumphteam.doclopedia.renderer
 
-import dev.triumphteam.doclopedia.DoclopediaPlugin
+import dev.triumphteam.doclopedia.DoclopediaDokkaPlugin
 import dev.triumphteam.doclopedia.renderer.ext.description
 import dev.triumphteam.doclopedia.renderer.ext.extraModifiers
 import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
@@ -88,7 +88,7 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 
     private val outputWriter = context.plugin<DokkaBase>().querySingle { outputWriter }
-    private val locationProviderFactory = context.plugin<DoclopediaPlugin>().querySingle { locationProviderFactory }
+    private val locationProviderFactory = context.plugin<DoclopediaDokkaPlugin>().querySingle { locationProviderFactory }
 
     // Main json instance for serializing
     private val json = Json {
