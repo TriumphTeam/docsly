@@ -12,6 +12,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 
 private const val DOKKA_ID = ""
+private const val DOCLOPEDIA_DOKKA = "dev.triumphteam:doclopedia-dokka-plugin:0.0.2"
 
 class DoclopediaGradlePlugin : Plugin<Project> {
 
@@ -21,7 +22,7 @@ class DoclopediaGradlePlugin : Plugin<Project> {
         }
 
         setupDokkaTask("dokkaDoclopedia") {
-            // plugins.dependencies.add(project.dokkaArtifacts.gfmPlugin)
+            plugins.dependencies.add(project.dependencies.create(DOCLOPEDIA_DOKKA))
             description = "Generates JSON documentation to be used by Doclopedia."
         }
     }

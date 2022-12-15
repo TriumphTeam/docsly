@@ -21,10 +21,6 @@ val javadocJar by tasks.registering(Jar::class) {
     from(dokkaOutputDir)
 }
 
-java {
-    withSourcesJar()
-}
-
 publishing {
     publications {
         val publication by creating(MavenPublication::class) {
