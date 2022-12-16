@@ -13,7 +13,7 @@ import org.jetbrains.dokka.gradle.DokkaTaskPartial
 private const val DOKKA_ID = "org.jetbrains.dokka"
 private const val DOCLOPEDIA_DOKKA = "dev.triumphteam:docsly-dokka-plugin:0.0.2"
 
-open class DoclopediaGradlePlugin : Plugin<Project> {
+open class DocslyGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project): Unit = with(project) {
         if (!plugins.hasPlugin(DOKKA_ID)) {
