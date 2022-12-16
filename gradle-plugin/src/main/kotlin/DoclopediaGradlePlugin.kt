@@ -1,9 +1,8 @@
-package dev.triumphteam.doclopedia
+package dev.triumphteam.docsly
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.internal.impldep.com.amazonaws.services.kms.model.NotFoundException
 import org.gradle.kotlin.dsl.register
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaCollectorTask
@@ -11,19 +10,19 @@ import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 
-private const val DOKKA_ID = ""
-private const val DOCLOPEDIA_DOKKA = "dev.triumphteam:doclopedia-dokka-plugin:0.0.2"
+private const val DOKKA_ID = "org.jetbrains.dokka"
+private const val DOCLOPEDIA_DOKKA = "dev.triumphteam:docsly-dokka-plugin:0.0.2"
 
-class DoclopediaGradlePlugin : Plugin<Project> {
+open class DoclopediaGradlePlugin : Plugin<Project> {
 
     override fun apply(project: Project): Unit = with(project) {
         if (!plugins.hasPlugin(DOKKA_ID)) {
-            throw NotFoundException("Doclopedia depends on Dokka to generate files, please make sure you have it on your project!")
+            throw RuntimeException("Docsly depends on Dokka to generate files, please make sure you have it on your project!")
         }
 
-        setupDokkaTask("dokkaDoclopedia") {
+        setupDokkaTask("dokkaDocsly") {
             plugins.dependencies.add(project.dependencies.create(DOCLOPEDIA_DOKKA))
-            description = "Generates JSON documentation to be used by Doclopedia."
+            description = "Generates JSON documentation to be used by Docsly."
         }
     }
 

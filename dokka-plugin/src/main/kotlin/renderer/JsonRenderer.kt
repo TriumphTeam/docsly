@@ -21,35 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.renderer
+package dev.triumphteam.docsly.renderer
 
-import dev.triumphteam.doclopedia.DoclopediaDokkaPlugin
-import dev.triumphteam.doclopedia.renderer.ext.description
-import dev.triumphteam.doclopedia.renderer.ext.extraModifiers
-import dev.triumphteam.doclopedia.renderer.ext.finalVisibility
-import dev.triumphteam.doclopedia.renderer.ext.getDocumentation
-import dev.triumphteam.doclopedia.renderer.ext.language
-import dev.triumphteam.doclopedia.renderer.ext.returnType
-import dev.triumphteam.doclopedia.renderer.ext.serialGenerics
-import dev.triumphteam.doclopedia.renderer.ext.toPath
-import dev.triumphteam.doclopedia.renderer.ext.toSerialAnnotations
-import dev.triumphteam.doclopedia.renderer.ext.toSerialModifiers
-import dev.triumphteam.doclopedia.renderer.ext.toSerialType
-import dev.triumphteam.doclopedia.serializable.ClassKind
-import dev.triumphteam.doclopedia.serializable.ClassLike
-import dev.triumphteam.doclopedia.serializable.Language
-import dev.triumphteam.doclopedia.serializable.Modifier
-import dev.triumphteam.doclopedia.serializable.SerializableAnnotationClass
-import dev.triumphteam.doclopedia.serializable.SerializableClass
-import dev.triumphteam.doclopedia.serializable.SerializableEnum
-import dev.triumphteam.doclopedia.serializable.SerializableFunction
-import dev.triumphteam.doclopedia.serializable.SerializableInterface
-import dev.triumphteam.doclopedia.serializable.SerializableObject
-import dev.triumphteam.doclopedia.serializable.SerializablePackage
-import dev.triumphteam.doclopedia.serializable.SerializableParameter
-import dev.triumphteam.doclopedia.serializable.SerializableProperty
-import dev.triumphteam.doclopedia.serializable.SerializableTypeAlias
-import dev.triumphteam.doclopedia.serializable.SuperType
+import dev.triumphteam.docsly.DocslyDokkaPlugin
+import dev.triumphteam.docsly.renderer.ext.description
+import dev.triumphteam.docsly.renderer.ext.extraModifiers
+import dev.triumphteam.docsly.renderer.ext.finalVisibility
+import dev.triumphteam.docsly.renderer.ext.getDocumentation
+import dev.triumphteam.docsly.renderer.ext.language
+import dev.triumphteam.docsly.renderer.ext.returnType
+import dev.triumphteam.docsly.renderer.ext.serialGenerics
+import dev.triumphteam.docsly.renderer.ext.toPath
+import dev.triumphteam.docsly.renderer.ext.toSerialAnnotations
+import dev.triumphteam.docsly.renderer.ext.toSerialModifiers
+import dev.triumphteam.docsly.renderer.ext.toSerialType
+import dev.triumphteam.docsly.serializable.ClassKind
+import dev.triumphteam.docsly.serializable.ClassLike
+import dev.triumphteam.docsly.serializable.Language
+import dev.triumphteam.docsly.serializable.Modifier
+import dev.triumphteam.docsly.serializable.SerializableAnnotationClass
+import dev.triumphteam.docsly.serializable.SerializableClass
+import dev.triumphteam.docsly.serializable.SerializableEnum
+import dev.triumphteam.docsly.serializable.SerializableEnumEntry
+import dev.triumphteam.docsly.serializable.SerializableFunction
+import dev.triumphteam.docsly.serializable.SerializableInterface
+import dev.triumphteam.docsly.serializable.SerializableObject
+import dev.triumphteam.docsly.serializable.SerializablePackage
+import dev.triumphteam.docsly.serializable.SerializableParameter
+import dev.triumphteam.docsly.serializable.SerializableProperty
+import dev.triumphteam.docsly.serializable.SerializableTypeAlias
+import dev.triumphteam.docsly.serializable.SuperType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -60,6 +61,8 @@ import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.resolvers.local.LocationProvider
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
+import org.jetbrains.dokka.model.BooleanConstant
+import org.jetbrains.dokka.model.ComplexExpression
 import org.jetbrains.dokka.model.DAnnotation
 import org.jetbrains.dokka.model.DClass
 import org.jetbrains.dokka.model.DClasslike
@@ -70,10 +73,20 @@ import org.jetbrains.dokka.model.DObject
 import org.jetbrains.dokka.model.DPackage
 import org.jetbrains.dokka.model.DProperty
 import org.jetbrains.dokka.model.DTypeAlias
+import org.jetbrains.dokka.model.DefaultValue
+import org.jetbrains.dokka.model.Documentable
+import org.jetbrains.dokka.model.DoubleConstant
+import org.jetbrains.dokka.model.Expression
+import org.jetbrains.dokka.model.FloatConstant
+import org.jetbrains.dokka.model.InheritedMember
+import org.jetbrains.dokka.model.IntegerConstant
 import org.jetbrains.dokka.model.PrimaryConstructorExtra
+import org.jetbrains.dokka.model.StringConstant
 import org.jetbrains.dokka.model.WithAbstraction
 import org.jetbrains.dokka.model.WithConstructors
+import org.jetbrains.dokka.model.WithScope
 import org.jetbrains.dokka.model.WithSupertypes
+import org.jetbrains.dokka.model.properties.WithExtraProperties
 import org.jetbrains.dokka.pages.ModulePageNode
 import org.jetbrains.dokka.pages.PackagePageNode
 import org.jetbrains.dokka.pages.RootPageNode
@@ -88,7 +101,8 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 
     private val outputWriter = context.plugin<DokkaBase>().querySingle { outputWriter }
-    private val locationProviderFactory = context.plugin<DoclopediaDokkaPlugin>().querySingle { locationProviderFactory }
+    private val locationProviderFactory =
+        context.plugin<DocslyDokkaPlugin>().querySingle { locationProviderFactory }
 
     // Main json instance for serializing
     private val json = Json {
@@ -130,9 +144,9 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
                     // Main package classes
                     classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
                     // Top level functions
-                    functions.forEach { contentBuilder.append(it.render(locationProvider)) }
+                    filteredFunctions.forEach { contentBuilder.append(it.render(locationProvider)) }
                     // Top level properties
-                    properties.forEach { contentBuilder.append(it.render(locationProvider)) }
+                    filteredProperties.forEach { contentBuilder.append(it.render(locationProvider)) }
                     // Type aliases
                     typealiases.forEach { contentBuilder.append(it.render(locationProvider)) }
 
@@ -180,9 +194,10 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
 
     /** Renders all the [ClassLike] and return themselves, but meanwhile appends all its children into the [ContentBuilder]. */
     private fun DClasslike.render(locationProvider: LocationProvider, contentBuilder: ContentBuilder): ClassLike {
+
         // Append all the children before appending itself
-        functions.forEach { contentBuilder.append(it.render(locationProvider, this is DInterface)) }
-        properties.forEach { contentBuilder.append(it.render(locationProvider)) }
+        filteredFunctions.forEach { contentBuilder.append(it.render(locationProvider, this is DInterface)) }
+        filteredProperties.forEach { contentBuilder.append(it.render(locationProvider)) }
         classlikes.forEach { contentBuilder.append(it.render(locationProvider, contentBuilder)) }
 
         // Return itself to be appended
@@ -223,6 +238,21 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
             }
 
             is DEnum -> {
+                // Adding all the entries from the ENUM
+                entries.forEach {
+                    contentBuilder.append(
+                        SerializableEnumEntry(
+                            location = locationProvider.expectedLocationForDri(it.dri),
+                            path = dri.toPath(),
+                            name = it.name,
+                            annotations = it.annotations().toSerialAnnotations(),
+                            modifiers = it.modifiers().toSerialModifiers().plus(it.extraModifiers).toSet(),
+                            documentation = it.description,
+                            extraDocumentation = it.getDocumentation(),
+                        )
+                    )
+                }
+
                 SerializableEnum(
                     location = locationProvider.expectedLocationForDri(dri),
                     path = dri.toPath(),
@@ -308,6 +338,8 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
             val name = parameter.name ?: return@mapNotNull null
             val type = parameter.type.toSerialType() ?: return@mapNotNull null
 
+            val test: String? = parameter.extra[DefaultValue]?.expression?.values?.firstOrNull()?.stringValue
+
             SerializableParameter(
                 name = name,
                 type = type,
@@ -361,4 +393,24 @@ class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
     /** Simpler way to get the main modifier. */
     private val WithAbstraction.mainModifier
         get() = modifier.values.mapNotNull { Modifier.fromString(it.name) }
+
+    private val WithScope.filteredFunctions: List<DFunction>
+        get() = functions.filterNot { it.isInherited() }
+
+    private val WithScope.filteredProperties: List<DProperty>
+        get() = properties.filterNot { it.isInherited() }
+
+    private fun <T> T.isInherited(): Boolean where T : Documentable, T : WithExtraProperties<T> =
+        sourceSets.all { sourceSet -> extra[InheritedMember]?.isInherited(sourceSet) == true }
+
+    private val Expression.stringValue: String?
+        get() = when (this) {
+            is ComplexExpression -> value
+            is StringConstant -> value
+            is IntegerConstant -> value.toString()
+            is DoubleConstant -> value.toString()
+            is FloatConstant -> value.toString()
+            is BooleanConstant -> value.toString()
+            else -> null
+        }
 }

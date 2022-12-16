@@ -1,11 +1,14 @@
 plugins {
-    id("doclopedia.base-conventions")
-    id("doclopedia.library-conventions")
+    id("docsly.base-conventions")
+    id("docsly.library-conventions")
 }
 
 dependencies {
-    api(projects.doclopediaSerializable)
-    implementation(libs.dokka.base)
+    api(projects.docslySerializable)
+
+    api(libs.dokka.base)
+    api(libs.kotlinx.json)
+    api(libs.kotlinx.coroutines)
 
     compileOnly(libs.dokka.core)
 

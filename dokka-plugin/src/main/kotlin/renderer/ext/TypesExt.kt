@@ -21,20 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.renderer.ext
+package dev.triumphteam.docsly.renderer.ext
 
-import dev.triumphteam.doclopedia.KOTLIN
-import dev.triumphteam.doclopedia.OBJECT
-import dev.triumphteam.doclopedia.PLUGIN_NAME
-import dev.triumphteam.doclopedia.WILD_CARD
-import dev.triumphteam.doclopedia.serializable.BasicType
-import dev.triumphteam.doclopedia.serializable.FunctionType
-import dev.triumphteam.doclopedia.serializable.GenericProjection
-import dev.triumphteam.doclopedia.serializable.GenericType
-import dev.triumphteam.doclopedia.serializable.Nullability
-import dev.triumphteam.doclopedia.serializable.SerializableType
-import dev.triumphteam.doclopedia.serializable.StarType
-import dev.triumphteam.doclopedia.serializable.TypeAliasType
+import dev.triumphteam.docsly.KOTLIN
+import dev.triumphteam.docsly.OBJECT
+import dev.triumphteam.docsly.PLUGIN_NAME
+import dev.triumphteam.docsly.WILD_CARD
+import dev.triumphteam.docsly.serializable.BasicType
+import dev.triumphteam.docsly.serializable.FunctionType
+import dev.triumphteam.docsly.serializable.GenericProjection
+import dev.triumphteam.docsly.serializable.GenericType
+import dev.triumphteam.docsly.serializable.Nullability
+import dev.triumphteam.docsly.serializable.SerializableType
+import dev.triumphteam.docsly.serializable.StarType
+import dev.triumphteam.docsly.serializable.TypeAliasType
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
 import org.jetbrains.dokka.links.DriOfUnit

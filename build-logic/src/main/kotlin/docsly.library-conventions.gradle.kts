@@ -29,14 +29,14 @@ publishing {
             artifact(javadocJar.get())
 
             pom {
-                name.set("Doclopedia Dokka plugin")
-                description.set("This the Doclopedia plugin for Dokka")
-                url.set("https://github.com/TriumphTeam/doclopedia")
+                name.set("Docsly Dokka plugin")
+                description.set("This the Docsly plugin for Dokka")
+                url.set("https://github.com/TriumphTeam/docsly")
 
                 licenses {
                     license {
                         name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
+                        url.set("https://opensource.org/docsly/MIT")
                         distribution.set("repo")
                     }
                 }
@@ -51,8 +51,8 @@ publishing {
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/TriumphTeam/doclopedia.git")
-                    url.set("https://github.com/TriumphTeam/doclopedia/tree/master")
+                    connection.set("scm:git:git://github.com/TriumphTeam/docsly.git")
+                    url.set("https://github.com/TriumphTeam/docsly/tree/master")
                 }
             }
         }

@@ -21,14 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.serializable
+package dev.triumphteam.docsly.serializable
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /** A serializable member of a [ClassLike] element. */
 @Serializable
-sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation, WithVisibility, WithExtraDocs, WithGenerics,
+sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation, WithVisibility, WithExtraDocs,
+    WithGenerics,
     WithAnnotations
 
 /**
@@ -103,3 +104,16 @@ data class SerializableTypeAlias(
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
 ) : SerializableMember, WithType<SerializableType>
+
+/** Serializable class with the data of an enum entry. */
+@Serializable
+@SerialName("ENUM_ENTRY")
+data class SerializableEnumEntry(
+    override val location: String,
+    override val path: Path,
+    override val name: String,
+    override val annotations: List<SerializableAnnotation>,
+    override val modifiers: Set<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+) : DocElement, WithDocumentation, WithExtraDocs, WithAnnotations, WithModifiers

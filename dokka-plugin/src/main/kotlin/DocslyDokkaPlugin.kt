@@ -21,14 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia
+package dev.triumphteam.docsly
 
-import dev.triumphteam.doclopedia.renderer.JsonRenderer
+import dev.triumphteam.docsly.renderer.JsonRenderer
 import org.jetbrains.dokka.CoreExtensions
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.plugability.DokkaPlugin
 
-class DoclopediaDokkaPlugin : DokkaPlugin() {
+class DocslyDokkaPlugin : DokkaPlugin() {
 
     val locationProviderFactory by lazy { dokkaBase.locationProviderFactory }
     private val dokkaBase by lazy { plugin<DokkaBase>() }

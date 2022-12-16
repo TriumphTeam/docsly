@@ -21,9 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.serializable.component
+package dev.triumphteam.docsly.serializable.component
 
-import dev.triumphteam.doclopedia.serializable.Documentation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

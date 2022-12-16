@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.renderer.ext
+package dev.triumphteam.docsly.renderer.ext
 
-import dev.triumphteam.doclopedia.KOTLIN_EXTENSION
-import dev.triumphteam.doclopedia.serializable.Language
-import dev.triumphteam.doclopedia.serializable.Modifier
-import dev.triumphteam.doclopedia.serializable.Path
-import dev.triumphteam.doclopedia.serializable.Visibility
+import dev.triumphteam.docsly.KOTLIN_EXTENSION
+import dev.triumphteam.docsly.serializable.Language
+import dev.triumphteam.docsly.serializable.Modifier
+import dev.triumphteam.docsly.serializable.Path
+import dev.triumphteam.docsly.serializable.Visibility
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.links.DRI
 import org.jetbrains.dokka.model.AdditionalModifiers

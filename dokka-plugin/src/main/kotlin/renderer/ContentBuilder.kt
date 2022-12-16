@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.renderer
+package dev.triumphteam.docsly.renderer
 
-import dev.triumphteam.doclopedia.serializable.DocElement
+import dev.triumphteam.docsly.serializable.DocElement
 
 class ContentBuilder {
 

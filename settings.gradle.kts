@@ -3,7 +3,14 @@ dependencyResolutionManagement {
     repositories.gradlePluginPortal()
 }
 
-rootProject.name = "doclopedia"
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+    }
+}
+
+rootProject.name = "docsly"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

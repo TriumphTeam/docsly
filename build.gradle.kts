@@ -1,3 +1,3 @@
 plugins {
-    id("doclopedia.parent-conventions")
+    id("docsly.parent-conventions")
 }

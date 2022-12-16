@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia
+package dev.triumphteam.docsly
 
-const val PLUGIN_NAME = "Doclopedia"
+const val PLUGIN_NAME = "Docsly"
 
 const val KOTLIN = "kotlin"
 const val KOTLIN_EXTENSION = ".kt"

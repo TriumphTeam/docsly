@@ -21,15 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.doclopedia.renderer.ext
+package dev.triumphteam.docsly.renderer.ext
 
-import dev.triumphteam.doclopedia.serializable.AnnotationAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.AnnotationValueType
-import dev.triumphteam.doclopedia.serializable.ArrayAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.LiteralAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.SerializableAnnotation
-import dev.triumphteam.doclopedia.serializable.SerializableAnnotationArgument
-import dev.triumphteam.doclopedia.serializable.TypedAnnotationArgument
+import dev.triumphteam.docsly.serializable.AnnotationAnnotationArgument
+import dev.triumphteam.docsly.serializable.AnnotationValueType
+import dev.triumphteam.docsly.serializable.ArrayAnnotationArgument
+import dev.triumphteam.docsly.serializable.LiteralAnnotationArgument
+import dev.triumphteam.docsly.serializable.SerializableAnnotation
+import dev.triumphteam.docsly.serializable.SerializableAnnotationArgument
+import dev.triumphteam.docsly.serializable.TypedAnnotationArgument
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.model.AnnotationParameterValue
 import org.jetbrains.dokka.model.AnnotationValue
