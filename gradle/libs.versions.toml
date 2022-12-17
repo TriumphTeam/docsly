@@ -6,6 +6,10 @@ license = "0.16.1"
 
 dokka = "1.7.20"
 
+ktor = "2.2.1"
+
+log4j = "2.18.0"
+
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -15,6 +19,15 @@ dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" 
 
 gradle-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+# Rest application
+ktor-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+
+# Logger
+logger-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j"}
+logger-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j"}
+logger-impl = { module = "org.apache.logging.log4j:log4j-slf4j18-impl", version.ref = "log4j"}
 
 # Testing
 dokka-api-test = { module = "org.jetbrains.dokka:dokka-test-api", version.ref = "dokka" }

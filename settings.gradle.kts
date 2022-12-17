@@ -17,7 +17,11 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 listOf(
     "dokka-plugin",
     "gradle-plugin",
+
     "serializable",
+
+    "app",
+    "discord"
 ).forEach {
     includeProject(it)
 }
