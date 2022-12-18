@@ -1,6 +1,5 @@
 package dev.triumphteam.docsly
 
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
 import io.ktor.server.application.Application
@@ -15,18 +14,7 @@ fun main() {
 }
 
 fun Application.module() {
-    val postgres = config.postgres
+    Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
 
-    val hikari = HikariDataSource(
-        HikariConfig().apply {
-            dataSourceClassName = "com.impossibl.postgres.jdbc.PGDataSource"
-            addDataSourceProperty("host", postgres.host)
-            addDataSourceProperty("port", postgres.port)
-            addDataSourceProperty("user", postgres.username)
-            addDataSourceProperty("password", postgres.password)
-            addDataSourceProperty("databaseName", postgres.database)
-        }
-    )
 
-    Database.connect(hikari)
 }

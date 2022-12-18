@@ -3,19 +3,10 @@ plugins {
 }
 
 dependencies {
+    implementation(projects.docslySerializable)
     implementation(libs.kotlinx.serialization.hocon)
 
-    // Rest
-    implementation(libs.ktor.core)
-    implementation(libs.ktor.netty)
-
-    // Logger
-    implementation(libs.logger.api)
-    implementation(libs.logger.core)
-    implementation(libs.logger.impl)
-
-    // DB
-    implementation(libs.exposed)
-    implementation(libs.postgres)
-    implementation(libs.hikari)
+    implementation(libs.bundles.ktor)
+    implementation(libs.bundles.logger)
+    implementation(libs.bundles.database)
 }

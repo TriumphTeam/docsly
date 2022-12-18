@@ -51,3 +51,8 @@ build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.r
 build-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 build-license = { module = "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin", version.ref = "license" }
 build-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+
+[bundles]
+ktor = ["ktor-core",  "ktor-netty"]
+logger = ["logger-api", "logger-core", "logger-impl"]
+database = ["exposed", "hikari", "postgres"]
