@@ -7,8 +7,6 @@ dependencies {
     api(projects.docslySerializable)
 
     api(libs.dokka.base)
-    api(libs.kotlinx.json)
-    api(libs.kotlinx.coroutines)
 
     compileOnly(libs.dokka.core)
 

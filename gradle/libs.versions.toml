@@ -1,17 +1,25 @@
 [versions]
 kotlin = "1.7.21"
-kotlinx-json = "1.4.1"
+kotlinx-serialization = "1.4.1"
 kotlinx-coroutines = "1.6.4"
 license = "0.16.1"
 
 dokka = "1.7.20"
 
+# Rest
 ktor = "2.2.1"
 
+# DB
+exposed = "0.40.1"
+postgres = "0.8.9"
+hikari = "5.0.1"
+
+# Logging
 log4j = "2.18.0"
 
 [libraries]
-kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serialization-hocon", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
@@ -23,6 +31,11 @@ gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 # Rest application
 ktor-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+
+# DB
+exposed = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+postgres = { module = "com.impossibl.pgjdbc-ng:pgjdbc-ng", version.ref = "postgres"}
 
 # Logger
 logger-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j"}

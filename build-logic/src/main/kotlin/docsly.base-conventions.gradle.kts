@@ -16,6 +16,8 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    api(libs.kotlinx.serialization.json)
+    api(libs.kotlinx.coroutines)
 }
 
 license {
