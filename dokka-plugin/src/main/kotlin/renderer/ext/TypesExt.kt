@@ -63,7 +63,7 @@ import org.jetbrains.dokka.model.WithGenerics
 private val DEFAULT_CONSTRAINT = BasicType(type = "Any", nullability = Nullability.NULLABLE)
 
 /** The return type of the function. */
-val DFunction.returnType: SerializableType?
+public val DFunction.returnType: SerializableType?
     get() = when {
         isConstructor -> null
         type is TypeConstructor && (type as TypeConstructor).dri == DriOfUnit -> null
@@ -72,7 +72,7 @@ val DFunction.returnType: SerializableType?
     }
 
 /** Gets the generics of a [WithGenerics] documentable mapped to the serial type. */
-val WithGenerics.serialGenerics: List<GenericType>
+public val WithGenerics.serialGenerics: List<GenericType>
     get() = generics.map {
         GenericType(
             name = it.name,
@@ -82,7 +82,7 @@ val WithGenerics.serialGenerics: List<GenericType>
     }
 
 /** Turns the projection type into a serial type recursively. */
-fun Projection.toSerialType(
+public fun Projection.toSerialType(
     projection: GenericProjection? = null,
     nullability: Nullability = Nullability.NOT_NULL,
 ): SerializableType? {

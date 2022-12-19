@@ -28,13 +28,14 @@ import kotlinx.serialization.Serializable
 
 /** A [ClassLike] represents any element that behaves like a Class. */
 @Serializable
-sealed interface ClassLike : DocElementWithLanguage, WithDocumentation, WithVisibility, WithAnnotations, WithModifiers,
+public sealed interface ClassLike : DocElementWithLanguage, WithDocumentation, WithVisibility, WithAnnotations,
+    WithModifiers,
     WithExtraDocs
 
 /** A serializable object that contains all information needed to describe a class. */
 @Serializable
 @SerialName("CLASS")
-data class SerializableClass(
+public data class SerializableClass(
     override val location: String,
     override val path: Path,
     override val language: Language,
@@ -53,7 +54,7 @@ data class SerializableClass(
 /** A serializable object that contains all information needed to describe an annotation class. */
 @Serializable
 @SerialName("ANNOTATION")
-data class SerializableAnnotationClass(
+public data class SerializableAnnotationClass(
     override val location: String,
     override val path: Path,
     override val language: Language,
@@ -71,7 +72,7 @@ data class SerializableAnnotationClass(
 /** A serializable object that contains all information needed to describe an enum. */
 @Serializable
 @SerialName("ENUM")
-data class SerializableEnum(
+public data class SerializableEnum(
     override val location: String,
     override val path: Path,
     override val language: Language,
@@ -89,7 +90,7 @@ data class SerializableEnum(
 /** A serializable object that contains all information needed to describe an object. */
 @Serializable
 @SerialName("OBJECT")
-data class SerializableObject(
+public data class SerializableObject(
     override val location: String,
     override val path: Path,
     override val language: Language,
@@ -105,7 +106,7 @@ data class SerializableObject(
 /** A serializable object that contains all information needed to describe an interface. */
 @Serializable
 @SerialName("INTERFACE")
-data class SerializableInterface(
+public data class SerializableInterface(
     override val location: String,
     override val path: Path,
     override val language: Language,
@@ -122,17 +123,17 @@ data class SerializableInterface(
 
 /** Due to how super types work, it is also needed to save the [kind] of supertype it is. */
 @Serializable
-data class SuperType(@SerialName("name") val type: SerializableType, val kind: ClassKind)
+public data class SuperType(@SerialName("name") val type: SerializableType, val kind: ClassKind)
 
 /** Which kind of type is being used as supertype of a [WithSuperTypes]. */
 @Serializable
-enum class ClassKind {
+public enum class ClassKind {
     CLASS, INTERFACE, ENUM_CLASS, ENUM_ENTRY, ANNOTATION_CLASS, // Common
     OBJECT; // Kt only
 
-    companion object {
+    public companion object {
         private val MAPPED_VALUES = ClassKind.values().associateBy { it.name }
 
-        fun fromString(name: String) = MAPPED_VALUES[name]
+        public fun fromString(name: String): ClassKind? = MAPPED_VALUES[name]
     }
 }

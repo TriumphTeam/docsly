@@ -21,34 +21,34 @@ private val hocon = Hocon {
 private val EMPTY_CONFIG = Configuration()
 
 @Serializable
-data class Configuration(
-    val port: Int = 8080,
-    val host: String = "0.0.0.0",
-    val postgres: PostgresConfig = PostgresConfig(),
+public data class Configuration(
+    public val port: Int = 8080,
+    public val host: String = "0.0.0.0",
+    public val postgres: PostgresConfig = PostgresConfig(),
 )
 
 @Serializable
-data class PostgresConfig(
-    val host: String = "0.0.0.0",
-    val port: String = "5432",
-    val username: String = "",
-    val password: String = "",
-    val database: String = "",
+public data class PostgresConfig(
+    public val host: String = "0.0.0.0",
+    public val port: String = "5432",
+    public val username: String = "",
+    public val password: String = "",
+    public val database: String = "",
 ) {
 
     /** Turns this serializable config into one that can be used by Hikari. */
-    fun toHikariConfig() = HikariConfig().apply {
+    public fun toHikariConfig(): HikariConfig = HikariConfig().apply {
         dataSourceClassName = "com.impossibl.postgres.jdbc.PGDataSource"
         addDataSourceProperty("host", host)
         addDataSourceProperty("port", port)
-        addDataSourceProperty("user", username)
-        addDataSourceProperty("password", password)
+        addDataSourceProperty("user", this@PostgresConfig.username)
+        addDataSourceProperty("password", this@PostgresConfig.password)
         addDataSourceProperty("databaseName", database)
     }
 }
 
 /** Get a config if it exists, or create a new one with default values, which will always result in the app failing the run. */
-fun createOrGetConfig(): Configuration {
+public fun createOrGetConfig(): Configuration {
     val dataFolder = Path("data").also { if (it.notExists()) it.createDirectory() }
     val configFile = dataFolder / "configuration.conf"
 

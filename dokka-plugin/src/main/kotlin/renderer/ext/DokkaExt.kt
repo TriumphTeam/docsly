@@ -38,20 +38,20 @@ import org.jetbrains.dokka.model.WithVisibility
 import org.jetbrains.dokka.model.properties.WithExtraProperties
 
 /** Simple extension to turn Dokka modifiers into serializable ones. */
-fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers() =
+public fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers(): List<Modifier> =
     values.flatten().mapNotNull { Modifier.fromString(it.name) }
 
-val <T : Documentable> WithExtraProperties<T>.extraModifiers: List<Modifier>
+public val <T : Documentable> WithExtraProperties<T>.extraModifiers: List<Modifier>
     get() = extra[AdditionalModifiers]?.content?.values?.flatMap { set ->
         set.mapNotNull { Modifier.fromString(it.name) }
     } ?: emptyList()
 
 /** Simple extension get the final visibility of a [WithVisibility] documentable. */
-val WithVisibility.finalVisibility: Visibility
+public val WithVisibility.finalVisibility: Visibility
     get() = visibility.values.firstOrNull()?.name?.let { Visibility.fromString(it) } ?: Visibility.PUBLIC
 
 /** Small hack to get the language of the documentable we're currently serializing. */
-val WithSources.language: Language
+public val WithSources.language: Language
     get() = if (sources.values.firstOrNull()?.path?.endsWith(
             KOTLIN_EXTENSION,
             true
@@ -59,4 +59,4 @@ val WithSources.language: Language
     ) Language.KOTLIN else Language.JAVA
 
 /** Gets the actual path from a [DRI] object. */
-fun DRI.toPath(): Path = Path(packageName, classNames?.split('.'))
+public fun DRI.toPath(): Path = Path(packageName, classNames?.split('.'))

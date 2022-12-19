@@ -28,28 +28,28 @@ import kotlinx.serialization.Serializable
 
 /** Any serializable that can be linked to a specific location of a language. */
 @Serializable
-sealed interface DocElement : WithName {
+public sealed interface DocElement : WithName {
     /** The URL location of the serializable. */
-    val location: String
+    public val location: String
 
     /** The virtual path of the serializable within the codebase. */
-    val path: Path
+    public val path: Path
 }
 
 /** A [DocElement] that also contains language details. */
 @Serializable
-sealed interface DocElementWithLanguage : DocElement, WithLanguage
+public sealed interface DocElementWithLanguage : DocElement, WithLanguage
 
 /** Contains information about the [DocElement]'s path. */
 @Serializable
-data class Path(
-    val packagePath: String?,
-    val classPath: List<String>?,
+public data class Path(
+    public val packagePath: String?,
+    public val classPath: List<String>?,
 )
 
 @Serializable
 @SerialName("PACKAGE")
-data class SerializablePackage(
+public data class SerializablePackage(
     override val location: String,
     override val path: Path,
     override val name: String,
@@ -60,28 +60,28 @@ data class SerializablePackage(
 
 /** Possible documentation languages. */
 @Serializable
-enum class Language {
+public enum class Language {
     KOTLIN, JAVA;
 }
 
 /** Possible visibilities for a serializable [WithVisibility]. */
 @Serializable
-enum class Visibility {
+public enum class Visibility {
     PRIVATE, PROTECTED, PUBLIC, // Common
     INTERNAL, // KT only
     PACKAGE; // Java only
 
-    companion object {
+    public companion object {
         private val MAPPED_VALUES = values().associateBy { it.name.lowercase() }
 
         /** If the type is empty it'll be Java's [PACKAGE], else we take it from the mapped values. */
-        fun fromString(name: String) = if (name.isEmpty()) PACKAGE else MAPPED_VALUES[name]
+        public fun fromString(name: String): Visibility? = if (name.isEmpty()) PACKAGE else MAPPED_VALUES[name]
     }
 }
 
 /** Shout out to non-sealed for being the odd one out and needing [displayName], thanks Java. */
 @Serializable
-enum class Modifier(val displayName: String? = null) {
+public enum class Modifier(public val displayName: String? = null) {
     // KOTLIN ONLY
     INLINE, VALUE, INFIX, EXTERNAL, SUSPEND, REIFIED, CROSSINLINE, NOINLINE, OVERRIDE, DATA, CONST, INNER, LATEINIT, OPERATOR, TAILREC, VARARG,
 
@@ -91,9 +91,9 @@ enum class Modifier(val displayName: String? = null) {
     // COMMON
     OPEN, FINAL, ABSTRACT, SEALED;
 
-    companion object {
+    public companion object {
         private val MAPPED_VALUES = values().associateBy { it.displayName ?: it.name.lowercase() }
 
-        fun fromString(name: String) = MAPPED_VALUES[name]
+        public fun fromString(name: String): Modifier? = MAPPED_VALUES[name]
     }
 }

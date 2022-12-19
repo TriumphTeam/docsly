@@ -23,9 +23,9 @@
  */
 package dev.triumphteam.docsly
 
-const val PLUGIN_NAME = "Docsly"
+public const val PLUGIN_NAME: String = "Docsly"
 
-const val KOTLIN = "kotlin"
-const val KOTLIN_EXTENSION = ".kt"
-const val OBJECT = "Object"
-const val WILD_CARD = "?"
+public const val KOTLIN: String = "kotlin"
+public const val KOTLIN_EXTENSION: String = ".kt"
+public const val OBJECT: String = "Object"
+public const val WILD_CARD: String = "?"

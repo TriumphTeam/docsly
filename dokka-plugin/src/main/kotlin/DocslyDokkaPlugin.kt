@@ -26,14 +26,18 @@ package dev.triumphteam.docsly
 import dev.triumphteam.docsly.renderer.JsonRenderer
 import org.jetbrains.dokka.CoreExtensions
 import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.resolvers.local.LocationProviderFactory
 import org.jetbrains.dokka.plugability.DokkaPlugin
+import org.jetbrains.dokka.plugability.Extension
+import org.jetbrains.dokka.plugability.ExtensionPoint
+import org.jetbrains.dokka.renderers.Renderer
 
-class DocslyDokkaPlugin : DokkaPlugin() {
+public class DocslyDokkaPlugin : DokkaPlugin() {
 
-    val locationProviderFactory by lazy { dokkaBase.locationProviderFactory }
+    public val locationProviderFactory: ExtensionPoint<LocationProviderFactory> by lazy { dokkaBase.locationProviderFactory }
     private val dokkaBase by lazy { plugin<DokkaBase>() }
 
-    val renderer by extending {
+    public val renderer: Extension<Renderer, *, *> by extending {
         CoreExtensions.renderer providing ::JsonRenderer override dokkaBase.htmlRenderer
     }
 }

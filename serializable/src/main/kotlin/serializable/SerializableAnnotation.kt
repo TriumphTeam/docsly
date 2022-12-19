@@ -28,43 +28,44 @@ import kotlinx.serialization.Serializable
 
 /** A simple representation of an annotation with all its needed arguments. */
 @Serializable
-data class SerializableAnnotation(
-    @SerialName("class") val type: String,
-    val arguments: Map<String, SerializableAnnotationArgument> = emptyMap(),
+public data class SerializableAnnotation(
+    @SerialName("class") public val type: String,
+    public val arguments: Map<String, SerializableAnnotationArgument> = emptyMap(),
 )
 
 // ARGUMENTS
 
 /** Represents an annotation argument. */
 @Serializable
-sealed interface SerializableAnnotationArgument
+public sealed interface SerializableAnnotationArgument
 
 /** An annotation holder .. annotation. */
 @Serializable
 @SerialName("ANNOTATION")
-data class AnnotationAnnotationArgument(val value: SerializableAnnotation) : SerializableAnnotationArgument
+public data class AnnotationAnnotationArgument(val value: SerializableAnnotation) : SerializableAnnotationArgument
 
 /** An array annotation which has a list of arguments. */
 @Serializable
 @SerialName("ARRAY")
-data class ArrayAnnotationArgument(val value: List<SerializableAnnotationArgument>) : SerializableAnnotationArgument
+public data class ArrayAnnotationArgument(val value: List<SerializableAnnotationArgument>) :
+    SerializableAnnotationArgument
 
 /** An argument of a type, normally either class type or enum type. */
 @Serializable
 @SerialName("TYPED")
-data class TypedAnnotationArgument(
-    val typeName: String,
-    val valueType: AnnotationValueType,
+public data class TypedAnnotationArgument(
+    public val typeName: String,
+    public val valueType: AnnotationValueType,
 ) : SerializableAnnotationArgument
 
 /** An argument holding a constant value. */
 @Serializable
 @SerialName("LITERAL")
-data class LiteralAnnotationArgument(val typeName: String) : SerializableAnnotationArgument
+public data class LiteralAnnotationArgument(val typeName: String) : SerializableAnnotationArgument
 
 /** The value type for a [TypedAnnotationArgument]. */
 @Serializable
-enum class AnnotationValueType {
+public enum class AnnotationValueType {
     CLASS,
     ENUM,
 }

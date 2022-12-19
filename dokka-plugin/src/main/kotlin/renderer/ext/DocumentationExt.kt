@@ -75,19 +75,19 @@ import org.jetbrains.dokka.model.doc.U
 import org.jetbrains.dokka.model.doc.Version
 
 /** Shortcut to get the [Documentable]'s main documentation. */
-val Documentable.description: DescriptionDocumentation?
+public val Documentable.description: DescriptionDocumentation?
     get() = document?.children?.filterIsInstance<Description>()?.firstOrNull()?.let {
         DescriptionDocumentation(parseRoot(it.children))
     }
 
 /** Shortcut to get the main documentation, specifically of a parameter. */
-val DParameter.description: DescriptionDocumentation?
+public val DParameter.description: DescriptionDocumentation?
     get() = document?.children?.firstOrNull()?.let {
         DescriptionDocumentation(parseRoot(it.children))
     }
 
 /** Shortcut to get all the extra documentation from a [Documentable]. */
-fun Documentable.getDocumentation(): List<Documentation> {
+public fun Documentable.getDocumentation(): List<Documentation> {
     return document?.children?.mapNotNull {
         it.toDocumentation()
     } ?: emptyList()

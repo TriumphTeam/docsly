@@ -1,3 +1,4 @@
+
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -31,6 +32,10 @@ license {
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
     withSourcesJar()
+}
+
+kotlin {
+    explicitApi()
 }
 
 tasks {

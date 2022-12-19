@@ -40,7 +40,7 @@ import org.jetbrains.dokka.model.EnumValue
 import org.jetbrains.dokka.model.LiteralValue
 
 /** Flattens and maps the annotations into a string List. */
-fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.toSerialAnnotations() =
+public fun Map<DokkaConfiguration.DokkaSourceSet, List<Annotations.Annotation>>.toSerialAnnotations(): List<SerializableAnnotation> =
     values.flatten().filter(Annotations.Annotation::mustBeDocumented).mapNotNull(Annotations.Annotation::mapAnnotation)
 
 /** Maps the [Annotations.Annotation] into the serializable [SerializableAnnotation]. */

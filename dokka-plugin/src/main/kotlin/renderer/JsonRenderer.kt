@@ -96,7 +96,7 @@ import org.jetbrains.dokka.plugability.querySingle
 import org.jetbrains.dokka.renderers.Renderer
 import kotlin.coroutines.CoroutineContext
 
-class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
+public class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 

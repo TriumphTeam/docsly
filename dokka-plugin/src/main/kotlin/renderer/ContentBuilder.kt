@@ -25,13 +25,13 @@ package dev.triumphteam.docsly.renderer
 
 import dev.triumphteam.docsly.serializable.DocElement
 
-class ContentBuilder {
+public class ContentBuilder {
 
     private val content: MutableList<DocElement> = mutableListOf()
 
-    fun append(element: DocElement) {
+    public fun append(element: DocElement) {
         content += element
     }
 
-    fun build() = content.toList()
+    public fun build(): List<DocElement> = content.toList()
 }

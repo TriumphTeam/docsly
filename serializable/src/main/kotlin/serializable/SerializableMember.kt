@@ -28,7 +28,7 @@ import kotlinx.serialization.Serializable
 
 /** A serializable member of a [ClassLike] element. */
 @Serializable
-sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation, WithVisibility, WithExtraDocs,
+public sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation, WithVisibility, WithExtraDocs,
     WithGenerics,
     WithAnnotations
 
@@ -38,13 +38,13 @@ sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation,
  */
 @Serializable
 @SerialName("PROPERTY")
-data class SerializableProperty(
+public data class SerializableProperty(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    val setter: SerializableFunction?,
-    val getter: SerializableFunction?,
+    public val setter: SerializableFunction?,
+    public val getter: SerializableFunction?,
     override val visibility: Visibility,
     @SerialName("class") override val type: SerializableType,
     override val receiver: SerializableType?,
@@ -62,12 +62,12 @@ data class SerializableProperty(
  */
 @Serializable
 @SerialName("FUNCTION")
-data class SerializableFunction(
+public data class SerializableFunction(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    val parameters: List<SerializableParameter> = emptyList(),
+    public val parameters: List<SerializableParameter> = emptyList(),
     override val visibility: Visibility,
     @SerialName("class") override val type: SerializableType?,
     override val receiver: SerializableType?,
@@ -80,9 +80,9 @@ data class SerializableFunction(
 
 /** A function parameter. */
 @Serializable
-data class SerializableParameter(
+public data class SerializableParameter(
     override val name: String,
-    @SerialName("class") val type: SerializableType,
+    @SerialName("class") public val type: SerializableType,
     override val annotations: List<SerializableAnnotation>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
@@ -91,13 +91,13 @@ data class SerializableParameter(
 /** Serializable class to represent Kotlin's `typealias`. */
 @Serializable
 @SerialName("TYPE_ALIAS")
-data class SerializableTypeAlias(
+public data class SerializableTypeAlias(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
     @SerialName("class") override val type: SerializableType,
-    @SerialName("underlyingClass") val underlyingType: SerializableType,
+    @SerialName("underlyingClass") public val underlyingType: SerializableType,
     override val visibility: Visibility,
     override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
@@ -108,7 +108,7 @@ data class SerializableTypeAlias(
 /** Serializable class with the data of an enum entry. */
 @Serializable
 @SerialName("ENUM_ENTRY")
-data class SerializableEnumEntry(
+public data class SerializableEnumEntry(
     override val location: String,
     override val path: Path,
     override val name: String,
