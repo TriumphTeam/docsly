@@ -40,7 +40,6 @@ public class Meili(config: Configuration) {
     }
 }
 
-
 public suspend inline fun <reified T> PipelineContext<*, ApplicationCall>.search(
     index: String,
     query: String,

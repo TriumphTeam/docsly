@@ -28,7 +28,11 @@ import kotlinx.serialization.Serializable
 
 /** A serializable member of a [ClassLike] element. */
 @Serializable
-public sealed interface SerializableMember : DocElementWithLanguage, WithDocumentation, WithVisibility, WithExtraDocs,
+public sealed interface SerializableMember :
+    DocElementWithLanguage,
+    WithDocumentation,
+    WithVisibility,
+    WithExtraDocs,
     WithGenerics,
     WithAnnotations
 

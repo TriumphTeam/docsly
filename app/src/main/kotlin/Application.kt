@@ -27,7 +27,6 @@ public fun Application.module() {
     install(Resources)
 
     routing {
-
         get<Api.Index.Search> {
             // Here you handle the "api/{index}/search" endpoint
 

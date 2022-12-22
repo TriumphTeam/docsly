@@ -6,8 +6,6 @@ dependencies {
     // Hack to allow version catalog inside convention plugins
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
-    implementation(libs.build.kotlin)
-    implementation(libs.build.serialization)
-    implementation(libs.build.license)
-    implementation(libs.build.dokka)
+    // Bundled gradle portal plugins for convention plugins
+    implementation(libs.bundles.build)
 }
