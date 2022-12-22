@@ -35,21 +35,11 @@ import dev.triumphteam.docsly.serializable.SeeDocumentation
 import dev.triumphteam.docsly.serializable.SinceDocumentation
 import dev.triumphteam.docsly.serializable.ThrowsDocumentation
 import dev.triumphteam.docsly.serializable.VersionDocumentation
-import dev.triumphteam.docsly.serializable.component.CodeBlockComponent
-import dev.triumphteam.docsly.serializable.component.CodeInlineComponent
-import dev.triumphteam.docsly.serializable.component.Component
-import dev.triumphteam.docsly.serializable.component.DocumentationLinkComponent
-import dev.triumphteam.docsly.serializable.component.EmphasisComponent
-import dev.triumphteam.docsly.serializable.component.ParagraphComponent
-import dev.triumphteam.docsly.serializable.component.RootComponent
-import dev.triumphteam.docsly.serializable.component.StrikethroughComponent
-import dev.triumphteam.docsly.serializable.component.StrongEmphasisComponent
-import dev.triumphteam.docsly.serializable.component.TextComponent
-import dev.triumphteam.docsly.serializable.component.UnderlinedComponent
 import org.jetbrains.dokka.model.DParameter
 import org.jetbrains.dokka.model.Documentable
 import org.jetbrains.dokka.model.doc.Author
 import org.jetbrains.dokka.model.doc.B
+import org.jetbrains.dokka.model.doc.Br
 import org.jetbrains.dokka.model.doc.CodeBlock
 import org.jetbrains.dokka.model.doc.CodeInline
 import org.jetbrains.dokka.model.doc.Constructor
@@ -115,20 +105,76 @@ private fun TagWrapper.toDocumentation(): Documentation? {
     }
 }
 
-/** Entry point for parsing [DocTag] into [Component] to be serialized, always start as [RootComponent]. */
-private fun parseRoot(tags: List<DocTag>) = RootComponent(tags.flatMap(::parseTag))
+/** Entry point for parsing [DocTag] into [String] to be serialized. */
+private fun parseRoot(tags: List<DocTag>) = tags.joinToString("", transform = ::parseTag).trim()
 
-/** Recursive parsing of [DocTag]s into their correspondent [Component]. */
-private fun parseTag(tag: DocTag): List<Component> = when (tag) {
-    is B -> listOf(StrongEmphasisComponent(tag.children.flatMap(::parseTag)))
-    is I -> listOf(EmphasisComponent(tag.children.flatMap(::parseTag)))
-    is P -> listOf(ParagraphComponent(tag.children.flatMap(::parseTag)))
-    is U -> listOf(UnderlinedComponent(tag.children.flatMap(::parseTag)))
-    is Strong -> listOf(StrongEmphasisComponent(tag.children.flatMap(::parseTag)))
-    is Strikethrough -> listOf(StrikethroughComponent(tag.children.flatMap(::parseTag)))
-    is CodeBlock -> listOf(CodeBlockComponent(tag.children.flatMap(::parseTag)))
-    is CodeInline -> listOf(CodeInlineComponent(tag.children.flatMap(::parseTag)))
-    is DocumentationLink -> listOf(DocumentationLinkComponent(tag.children.flatMap(::parseTag)))
-    is Text -> listOf(TextComponent(tag.body, tag.children.flatMap(::parseTag)))
-    else -> tag.children.flatMap(::parseTag)
+/** Recursive parsing of [DocTag]s. */
+private fun parseTag(tag: DocTag): String = buildString {
+    when (tag) {
+        is B -> {
+            append("**")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("**")
+        }
+
+        is I -> {
+            append("*")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("*")
+        }
+
+        is P -> {
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("\n")
+        }
+
+        is U -> {
+            append("__")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("__")
+        }
+
+        is Strong -> {
+            append("**")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("**")
+        }
+
+        is Strikethrough -> {
+            append("~~")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("~~")
+        }
+
+        is CodeBlock -> {
+            append("```")
+            tag.params["lang"]?.let { append(it) }
+            append("\n")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("\n")
+            append("```")
+            append("\n")
+        }
+
+        is CodeInline -> {
+            append("`")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("`")
+        }
+
+        is DocumentationLink -> {
+            append("`")
+            append(tag.children.joinToString("", transform = ::parseTag))
+            append("`")
+        }
+
+        is Text -> {
+            append(tag.body)
+            append(tag.children.joinToString("", transform = ::parseTag))
+        }
+
+        Br -> append("\n")
+
+        else -> append(tag.children.joinToString("", transform = ::parseTag))
+    }
 }

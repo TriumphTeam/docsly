@@ -1,6 +1,7 @@
 package dev.triumphteam.docsly.database.exposed
 
 import com.impossibl.postgres.jdbc.PGArray
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.statements.api.PreparedStatementApi
@@ -8,10 +9,10 @@ import org.jetbrains.exposed.sql.statements.jdbc.JdbcPreparedStatementImpl
 import org.jetbrains.exposed.sql.vendors.currentDialect
 import kotlin.reflect.KClass
 
-inline fun <reified T : Enum<T>> Table.enumerationSet(name: String) =
+public inline fun <reified T : Enum<T>> Table.enumerationSet(name: String): Column<Set<T>> =
     registerColumn<Set<T>>(name, EnumSetColumnType(T::class))
 
-class EnumSetColumnType<T : Enum<T>>(private val klass: KClass<T>) : ColumnType() {
+public class EnumSetColumnType<T : Enum<T>>(private val klass: KClass<T>) : ColumnType() {
 
     // Keep the enum constants for when decoding from the DB
     private val enumConstants by lazy { klass.java.enumConstants }
