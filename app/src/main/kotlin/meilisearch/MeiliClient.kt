@@ -22,11 +22,11 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 
 /** A client to handle connection between the application and https://www.meilisearch.com/. */
-public class Meili(
+public class MeiliClient(
     host: String,
     port: Int,
-    protocol: URLProtocol,
     private val apiKey: String = "",
+    protocol: URLProtocol,
 ) {
 
     public val client: HttpClient = HttpClient(CIO) {
@@ -171,8 +171,6 @@ public class Meili(
     public data class Swap(public val indexes: List<String>)
 
     public companion object {
-
-        public const val QUERY_PARAM: String = "q"
         public const val PRIMARY_KEY_PARAM: String = "primaryKey"
     }
 }

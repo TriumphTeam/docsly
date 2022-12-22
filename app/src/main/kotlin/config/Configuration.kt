@@ -39,7 +39,7 @@ public data class Configuration(
 @Serializable
 public data class PostgresConfig(
     public val host: String = "0.0.0.0",
-    public val port: String = "5432",
+    public val port: Int = 5432,
     public val username: String = "",
     public val password: String = "",
     public val database: String = "",
@@ -59,7 +59,7 @@ public data class PostgresConfig(
 @Serializable
 public data class MeiliConfig(
     public val host: String = "0.0.0.0",
-    public val port: String = "7700",
+    public val port: Int = 7700,
     public val apiKey: String = "masterKey",
     @Contextual public val protocol: URLProtocol = URLProtocol.HTTP,
 )

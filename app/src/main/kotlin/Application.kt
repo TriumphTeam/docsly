@@ -2,6 +2,8 @@ package dev.triumphteam.docsly
 
 import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
+import dev.triumphteam.docsly.meilisearch.Meili
+import dev.triumphteam.docsly.meilisearch.search
 import dev.triumphteam.docsly.resource.Api
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -21,6 +23,7 @@ public fun main() {
 public fun Application.module() {
     Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
 
+    install(Meili) { config(config.meili) }
     install(Resources)
 
     routing {
@@ -29,7 +32,7 @@ public fun Application.module() {
             // Here you handle the "api/{index}/search" endpoint
 
             // Getting the index passed
-            val index = it.parent.index
+            search<String>(it.parent.index, "")
         }
     }
 }
