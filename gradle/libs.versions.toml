@@ -17,6 +17,9 @@ hikari = "5.0.1"
 # Logging
 log4j = "2.18.0"
 
+# Formatting
+spotless = "6.12.0"
+
 [libraries]
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serialization-hocon", version.ref = "kotlinx-serialization" }
@@ -63,9 +66,14 @@ build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.r
 build-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 build-license = { module = "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin", version.ref = "license" }
 build-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+build-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 
 [bundles]
-ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-resources"]
+ktor-server = [
+    "ktor-server-core",
+    "ktor-server-netty",
+    "ktor-server-resources"
+]
 ktor-client = [
     "ktor-client-core",
     "ktor-client-cio",
@@ -74,5 +82,20 @@ ktor-client = [
     "ktor-client-json",
     "ktor-client-resources"
 ]
-logger = ["logger-api", "logger-core", "logger-impl"]
-database = ["exposed", "hikari", "postgres"]
+logger = [
+    "logger-api",
+    "logger-core",
+    "logger-impl"
+]
+database = [
+    "exposed",
+    "hikari",
+    "postgres"
+]
+build = [
+    "build-kotlin",
+    "build-serialization",
+    "build-license",
+    "build-dokka",
+    "build-spotless"
+]

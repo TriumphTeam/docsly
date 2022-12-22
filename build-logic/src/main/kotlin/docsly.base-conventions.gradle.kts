@@ -1,4 +1,3 @@
-
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -9,6 +8,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.hierynomus.license")
+    id("com.diffplug.spotless")
 }
 
 repositories {
@@ -36,6 +36,24 @@ java {
 
 kotlin {
     explicitApi()
+}
+
+spotless {
+    format("format") {
+        trimTrailingWhitespace()
+        endWithNewline()
+        indentWithSpaces(4)
+
+        target(
+            "*.md",
+            ".gitignore",
+            "*.properties",
+        )
+    }
+
+    kotlin {
+        ktlint("0.48.0")
+    }
 }
 
 tasks {
