@@ -14,4 +14,5 @@ dependencies {
 
 
     implementation(libs.bundles.database)
+    implementation("io.ktor:ktor-client-resources:2.2.1")
 }

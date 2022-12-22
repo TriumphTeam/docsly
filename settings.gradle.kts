@@ -19,6 +19,7 @@ listOf(
     "gradle-plugin",
 
     "serializable",
+    "common",
 
     "app",
     "discord"

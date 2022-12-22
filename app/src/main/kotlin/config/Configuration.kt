@@ -3,8 +3,12 @@ package dev.triumphteam.docsly.config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import com.zaxxer.hikari.HikariConfig
+import dev.triumphteam.docsly.config.serializer.ProtocolSerializer
+import io.ktor.http.URLProtocol
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.hocon.Hocon
+import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectory
@@ -16,6 +20,10 @@ import kotlin.io.path.writeText
 private val hocon = Hocon {
     encodeDefaults = true
     useConfigNamingConvention = true
+
+    serializersModule = SerializersModule {
+        contextual(URLProtocol::class, ProtocolSerializer())
+    }
 }
 
 private val EMPTY_CONFIG = Configuration()
@@ -53,6 +61,7 @@ public data class MeiliConfig(
     public val host: String = "0.0.0.0",
     public val port: String = "7700",
     public val apiKey: String = "masterKey",
+    @Contextual public val protocol: URLProtocol = URLProtocol.HTTP,
 )
 
 /** Get a config if it exists, or create a new one with default values, which will always result in the app failing the run. */
