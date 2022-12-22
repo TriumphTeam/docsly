@@ -2,9 +2,13 @@ package dev.triumphteam.docsly
 
 import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
+import dev.triumphteam.docsly.resource.Api
 import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.resources.Resources
+import io.ktor.server.resources.get
 import io.ktor.server.routing.routing
 import org.jetbrains.exposed.sql.Database
 
@@ -17,8 +21,15 @@ public fun main() {
 public fun Application.module() {
     Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
 
+    install(Resources)
+
     routing {
 
+        get<Api.Index.Search> {
+            // Here you handle the "api/{index}/search" endpoint
 
+            // Getting the index passed
+            val index = it.parent.index
+        }
     }
 }

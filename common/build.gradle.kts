@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
-    api(libs.ktor.resource)
+    api(projects.docslySerializable)
+    api(libs.ktor.resources)
 }

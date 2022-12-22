@@ -31,10 +31,10 @@ gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 # Ktor server
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
-ktor-server-resource = { module = "io.ktor:ktor-server-resource", version.ref = "ktor" }
+ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
 
 # Common
-ktor-resource = { module = "io.ktor:ktor-resource", version.ref = "ktor" }
+ktor-resources = { module = "io.ktor:ktor-resources", version.ref = "ktor" }
 
 # Ktor client
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -42,7 +42,7 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-negociation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-client-resource = { module = "io.ktor:ktor-client-resource", version.ref = "ktor" }
+ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 
 # DB
 exposed = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
@@ -65,14 +65,14 @@ build-license = { module = "gradle.plugin.com.hierynomus.gradle.plugins:license-
 build-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 
 [bundles]
-ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-resource"]
+ktor-server = ["ktor-server-core", "ktor-server-netty", "ktor-server-resources"]
 ktor-client = [
     "ktor-client-core",
     "ktor-client-cio",
     "ktor-client-auth",
     "ktor-client-negociation",
     "ktor-client-json",
-    "ktor-client-resource"
+    "ktor-client-resources"
 ]
 logger = ["logger-api", "logger-core", "logger-impl"]
 database = ["exposed", "hikari", "postgres"]

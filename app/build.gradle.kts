@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.docslySerializable)
+    implementation(projects.docslyCommon)
 
     implementation(libs.kotlinx.serialization.hocon)
 
@@ -12,7 +12,5 @@ dependencies {
 
     implementation(libs.bundles.logger)
 
-
     implementation(libs.bundles.database)
-    implementation("io.ktor:ktor-client-resources:2.2.1")
 }
