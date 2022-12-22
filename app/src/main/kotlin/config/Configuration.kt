@@ -25,6 +25,7 @@ public data class Configuration(
     public val port: Int = 8080,
     public val host: String = "0.0.0.0",
     public val postgres: PostgresConfig = PostgresConfig(),
+    public val meili: MeiliConfig = MeiliConfig(),
 )
 
 @Serializable
@@ -46,6 +47,13 @@ public data class PostgresConfig(
         addDataSourceProperty("databaseName", database)
     }
 }
+
+@Serializable
+public data class MeiliConfig(
+    public val host: String = "0.0.0.0",
+    public val port: String = "7700",
+    public val apiKey: String = "masterKey",
+)
 
 /** Get a config if it exists, or create a new one with default values, which will always result in the app failing the run. */
 public fun createOrGetConfig(): Configuration {
