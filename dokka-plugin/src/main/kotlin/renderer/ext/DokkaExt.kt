@@ -56,7 +56,11 @@ public val WithSources.language: Language
             KOTLIN_EXTENSION,
             true
         ) == true
-    ) Language.KOTLIN else Language.JAVA
+    ) {
+        Language.KOTLIN
+    } else {
+        Language.JAVA
+    }
 
 /** Gets the actual path from a [DRI] object. */
 public fun DRI.toPath(): Path = Path(packageName, classNames?.split('.'))

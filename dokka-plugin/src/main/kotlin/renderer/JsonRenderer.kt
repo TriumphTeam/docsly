@@ -194,7 +194,6 @@ public class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
 
     /** Renders all the [ClassLike] and return themselves, but meanwhile appends all its children into the [ContentBuilder]. */
     private fun DClasslike.render(locationProvider: LocationProvider, contentBuilder: ContentBuilder): ClassLike {
-
         // Append all the children before appending itself
         filteredFunctions.forEach { contentBuilder.append(it.render(locationProvider, this is DInterface)) }
         filteredProperties.forEach { contentBuilder.append(it.render(locationProvider)) }
