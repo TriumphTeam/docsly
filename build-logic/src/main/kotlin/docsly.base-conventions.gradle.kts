@@ -52,7 +52,11 @@ spotless {
     }
 
     kotlin {
-        ktlint("0.48.0")
+        ktlint("0.47.1").editorConfigOverride(
+            mapOf(
+                "ktlint_disabled_rules" to "filename,trailing-comma-on-call-site,trailing-comma-on-declaration-site",
+            )
+        )
     }
 }
 
