@@ -1,8 +1,5 @@
 package dev.triumphteam.docsly
 
-import com.meilisearch.sdk.Client
-import com.meilisearch.sdk.Config
-import com.meilisearch.sdk.SearchRequest
 import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
 import dev.triumphteam.docsly.database.TestTable
@@ -35,11 +32,6 @@ public fun main() {
         }*/
         index.delete()
     }
-
-    return
-    val oldClient = Client(Config("http://localhost:7700", "masterKey"))
-    oldClient.index("quotes").search(SearchRequest())
-    oldClient.deleteIndex("movies")
     // embeddedServer(Netty, port = config.port, host = config.host, module = Application::module).start(wait = true)
 }
 

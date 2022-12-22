@@ -28,19 +28,26 @@ dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" 
 gradle-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
-# Rest application
+# Ktor server
 ktor-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+
+# Ktor client
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-negociation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 # DB
 exposed = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
-postgres = { module = "com.impossibl.pgjdbc-ng:pgjdbc-ng", version.ref = "postgres"}
+postgres = { module = "com.impossibl.pgjdbc-ng:pgjdbc-ng", version.ref = "postgres" }
 
 # Logger
-logger-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j"}
-logger-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j"}
-logger-impl = { module = "org.apache.logging.log4j:log4j-slf4j18-impl", version.ref = "log4j"}
+logger-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
+logger-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+logger-impl = { module = "org.apache.logging.log4j:log4j-slf4j18-impl", version.ref = "log4j" }
 
 # Testing
 dokka-api-test = { module = "org.jetbrains.dokka:dokka-test-api", version.ref = "dokka" }
@@ -53,6 +60,13 @@ build-license = { module = "gradle.plugin.com.hierynomus.gradle.plugins:license-
 build-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 
 [bundles]
-ktor = ["ktor-core",  "ktor-netty"]
+ktor-server = ["ktor-core", "ktor-netty"]
+ktor-client = [
+    "ktor-client-core",
+    "ktor-client-cio",
+    "ktor-client-auth",
+    "ktor-client-negociation",
+    "ktor-client-json",
+]
 logger = ["logger-api", "logger-core", "logger-impl"]
 database = ["exposed", "hikari", "postgres"]

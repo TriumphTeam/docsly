@@ -3,13 +3,9 @@ package dev.triumphteam.docsly.meilisearch
 import dev.triumphteam.docsly.meilisearch.annotation.PrimaryKey
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.delete
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -29,11 +25,7 @@ public class Meili(
 ) {
 
     public val url: String = "$host:$port"
-    public val client: HttpClient = HttpClient(OkHttp) {
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.HEADERS
-        }
+    public val client: HttpClient = HttpClient(CIO) {
         install(Auth) { api(apiKey) } // Auto setup authentication
         install(ContentNegotiation) { json() } // Using Kotlin serialization for content negotiation
     }
