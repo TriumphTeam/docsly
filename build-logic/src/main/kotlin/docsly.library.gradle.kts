@@ -7,7 +7,7 @@ plugins {
     signing
 }
 
-val dokkaOutputDir = "$buildDir/dokka"
+val dokkaOutputDir = "${layout.buildDirectory}/dokka"
 
 tasks {
     dokkaHtml {

@@ -1,16 +1,16 @@
 [versions]
-kotlin = "1.7.21"
-kotlinx-serialization = "1.4.1"
-kotlinx-coroutines = "1.6.4"
+kotlin = "1.9.0"
+kotlinx-serialization = "1.6.0"
+kotlinx-coroutines = "1.7.3"
 license = "0.16.1"
 
-dokka = "1.7.20"
+dokka = "1.9.0"
 
 # Rest
-ktor = "2.2.1"
+ktor = "2.3.4"
 
 # DB
-exposed = "0.40.1"
+exposed = "0.44.0"
 postgres = "0.8.9"
 hikari = "5.0.1"
 
@@ -49,6 +49,7 @@ ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref 
 
 # DB
 exposed = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 postgres = { module = "com.impossibl.pgjdbc-ng:pgjdbc-ng", version.ref = "postgres" }
 
@@ -89,6 +90,7 @@ logger = [
 ]
 database = [
     "exposed",
+    "exposed-jdbc",
     "hikari",
     "postgres"
 ]

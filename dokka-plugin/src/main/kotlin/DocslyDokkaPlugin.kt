@@ -28,8 +28,10 @@ import org.jetbrains.dokka.CoreExtensions
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.resolvers.local.LocationProviderFactory
 import org.jetbrains.dokka.plugability.DokkaPlugin
+import org.jetbrains.dokka.plugability.DokkaPluginApiPreview
 import org.jetbrains.dokka.plugability.Extension
 import org.jetbrains.dokka.plugability.ExtensionPoint
+import org.jetbrains.dokka.plugability.PluginApiPreviewAcknowledgement
 import org.jetbrains.dokka.renderers.Renderer
 
 public class DocslyDokkaPlugin : DokkaPlugin() {
@@ -39,5 +41,10 @@ public class DocslyDokkaPlugin : DokkaPlugin() {
 
     public val renderer: Extension<Renderer, *, *> by extending {
         CoreExtensions.renderer providing ::JsonRenderer override dokkaBase.htmlRenderer
+    }
+
+    @OptIn(DokkaPluginApiPreview::class)
+    override fun pluginApiPreviewAcknowledgement(): PluginApiPreviewAcknowledgement {
+        return PluginApiPreviewAcknowledgement
     }
 }

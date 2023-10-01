@@ -1,5 +1,5 @@
 plugins {
-    id("docsly.base-conventions")
+    id("docsly.base")
 }
 
 dependencies {

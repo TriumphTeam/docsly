@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    api(kotlin("stdlib"))
     api(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines)
 }
