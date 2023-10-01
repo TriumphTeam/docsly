@@ -49,7 +49,7 @@ ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref 
 
 # DB
 exposed = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 postgres = { module = "com.impossibl.pgjdbc-ng:pgjdbc-ng", version.ref = "postgres" }
 
@@ -90,7 +90,7 @@ logger = [
 ]
 database = [
     "exposed",
-    "exposed-jdbc",
+    "exposed-dao",
     "hikari",
     "postgres"
 ]

@@ -23,6 +23,9 @@
  */
 package dev.triumphteam.docsly.database
 
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 
@@ -30,4 +33,12 @@ public object DocsTable : IntIdTable() {
     public val name: Column<String> = varchar("doc_name", 32).uniqueIndex()
     public val version: Column<String> = varchar("doc_version", 32).uniqueIndex()
     public val guild: Column<Long> = long("guild_id").uniqueIndex()
+}
+
+public class DocDao(id: EntityID<Int>) : IntEntity(id) {
+    public companion object : IntEntityClass<DocDao>(DocsTable)
+
+    public var docId: EntityID<Int> by DocsTable.id
+    public var version: String by DocsTable.version
+    public var guild: Long by DocsTable.guild
 }
