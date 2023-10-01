@@ -38,16 +38,16 @@ public inline fun <reified T : Enum<T>> Table.enumerationSet(name: String): Colu
 public class EnumSetColumnType<T : Enum<T>>(private val klass: KClass<T>) : ColumnType() {
 
     // Keep the enum constants for when decoding from the DB
-    private val enumConstants by lazy { klass.java.enumConstants }
+    private val enumConstants by lazy { klass.java.enumConstants.associateBy { it.name.uppercase() } }
 
     /** The Postgres integer array type. Eg: INTEGER[] */
-    override fun sqlType(): String = "${currentDialect.dataTypeProvider.integerType()}[]"
+    override fun sqlType(): String = "${currentDialect.dataTypeProvider.textType()}[]"
 
     /** When writing the value, it can either be a full on list, or individual values. */
     override fun notNullValueToDB(value: Any): Any = when (value) {
-        is Collection<*> -> value.filterIsInstance<Enum<*>>().map { it.ordinal }
+        is Collection<*> -> value.filterIsInstance<Enum<*>>().map(Enum<*>::name)
         is Int -> value
-        is Enum<*> -> value.ordinal
+        is Enum<*> -> value.name
         else -> error("$value of ${value::class.qualifiedName} is not valid for enum set ${klass.simpleName}")
     }
 
@@ -72,6 +72,6 @@ public class EnumSetColumnType<T : Enum<T>>(private val klass: KClass<T>) : Colu
         }
     }
 
-    private fun Array<*>.toEnumSet() = filterIsInstance<Int>().map { enumConstants[it] }.toSet()
-    private fun Collection<*>.toEnumSet() = filterIsInstance<Int>().map { enumConstants[it] }.toSet()
+    private fun Array<*>.toEnumSet() = filterIsInstance<String>().map { enumConstants[it.uppercase()] }.toSet()
+    private fun Collection<*>.toEnumSet() = filterIsInstance<String>().map { enumConstants[it.uppercase()] }.toSet()
 }
