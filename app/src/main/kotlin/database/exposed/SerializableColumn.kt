@@ -27,16 +27,20 @@ import com.impossibl.postgres.jdbc.PGArray
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.TextColumnType
 import java.sql.Clob
 import kotlin.reflect.KClass
 
-private val json = Json
+public val json: Json = Json
 
 public inline fun <reified T : Any> Table.serializable(name: String, serializer: KSerializer<T>): Column<T> =
-    registerColumn<T>(name, SerializableColumnType(T::class, serializer))
+    registerColumn(name, SerializableColumnType(T::class, serializer))
+
+public inline fun <reified T : Any> Table.serializable(name: String): Column<T> =
+    registerColumn(name, SerializableColumnType(T::class, json.serializersModule.serializer()))
 
 @Suppress("UNCHECKED_CAST")
 public class SerializableColumnType<T : Any>(
