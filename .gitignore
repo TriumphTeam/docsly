@@ -50,7 +50,7 @@ cmake-build-*/
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
 
-# File-based project format
+# File-based defaults format
 *.iws
 
 # IntelliJ
@@ -107,7 +107,7 @@ gradle-app.setting
 # Avoid ignore Gradle wrappper properties
 !gradle-wrapper.properties
 
-# Cache of project
+# Cache of defaults
 .gradletasknamecache
 
 # Eclipse Gradle plugin generated files

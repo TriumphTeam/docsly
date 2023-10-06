@@ -23,7 +23,7 @@
  */
 package dev.triumphteam.docsly.renderer
 
-import dev.triumphteam.docsly.serializable.DocElement
+import dev.triumphteam.docsly.elements.DocElement
 
 public class ContentBuilder {
 

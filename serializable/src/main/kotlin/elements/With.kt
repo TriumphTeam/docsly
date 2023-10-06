@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.docsly.serializable
+package dev.triumphteam.docsly.elements
 
 /** The language the serializable was written in. */
 public interface WithLanguage {

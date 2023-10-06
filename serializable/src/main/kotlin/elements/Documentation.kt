@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.docsly.serializable
+package dev.triumphteam.docsly.elements
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,7 +29,7 @@ import kotlinx.serialization.Serializable
 /** A [Documentation] simply has its display [String]. */
 @Serializable
 public sealed interface Documentation {
-    public val comment: String
+    public val comment: String?
 }
 
 /** A [Documentation] that also contains a name. */
@@ -38,59 +38,59 @@ public sealed interface NamedDocumentation : Documentation, WithName
 /** Generally a description of a serializable. */
 @Serializable
 @SerialName("DESCRIPTION")
-public data class DescriptionDocumentation(override val comment: String) : Documentation
+public data class DescriptionDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@author` tag. */
 @Serializable
 @SerialName("AUTHOR")
-public data class AuthorDocumentation(override val comment: String) : Documentation
+public data class AuthorDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@version` tag. */
 @Serializable
 @SerialName("VERSION")
-public data class VersionDocumentation(override val comment: String) : Documentation
+public data class VersionDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@since` tag. */
 @Serializable
 @SerialName("SINCE")
-public data class SinceDocumentation(override val comment: String) : Documentation
+public data class SinceDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@see` tag. */
 @Serializable
 @SerialName("SEE")
-public data class SeeDocumentation(override val name: String, override val comment: String) : NamedDocumentation
+public data class SeeDocumentation(override val name: String, override val comment: String?) : NamedDocumentation
 
 /** Documentation of the `@return` tag. */
 @Serializable
 @SerialName("RETURN")
-public data class ReturnDocumentation(override val comment: String) : Documentation
+public data class ReturnDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@receiver` tag. */
 @Serializable
 @SerialName("RECEIVER")
-public data class ReceiverDocumentation(override val comment: String) : Documentation
+public data class ReceiverDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@constructor` tag. */
 @Serializable
 @SerialName("CONSTRUCTOR")
-public data class ConstructorDocumentation(override val comment: String) : Documentation
+public data class ConstructorDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of the `@throws` tag. */
 @Serializable
 @SerialName("THROWS")
-public data class ThrowsDocumentation(override val name: String, override val comment: String) : NamedDocumentation
+public data class ThrowsDocumentation(override val name: String, override val comment: String?) : NamedDocumentation
 
 /** Documentation of the `@sample` tag. */
 @Serializable
 @SerialName("SAMPLE")
-public data class SampleDocumentation(override val name: String, override val comment: String) : NamedDocumentation
+public data class SampleDocumentation(override val name: String, override val comment: String?) : NamedDocumentation
 
 /** Documentation of the `@deprecated` tag. */
 @Serializable
 @SerialName("DEPRECATED")
-public data class DeprecatedDocumentation(override val comment: String) : Documentation
+public data class DeprecatedDocumentation(override val comment: String?) : Documentation
 
 /** Documentation of a custom tag. */
 @Serializable
 @SerialName("CUSTOM")
-public data class CustomDocumentation(override val name: String, override val comment: String) : NamedDocumentation
+public data class CustomDocumentation(override val name: String, override val comment: String?) : NamedDocumentation

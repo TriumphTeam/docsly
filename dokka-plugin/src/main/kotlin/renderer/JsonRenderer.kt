@@ -35,22 +35,22 @@ import dev.triumphteam.docsly.renderer.ext.toPath
 import dev.triumphteam.docsly.renderer.ext.toSerialAnnotations
 import dev.triumphteam.docsly.renderer.ext.toSerialModifiers
 import dev.triumphteam.docsly.renderer.ext.toSerialType
-import dev.triumphteam.docsly.serializable.ClassKind
-import dev.triumphteam.docsly.serializable.ClassLike
-import dev.triumphteam.docsly.serializable.Language
-import dev.triumphteam.docsly.serializable.Modifier
-import dev.triumphteam.docsly.serializable.SerializableAnnotationClass
-import dev.triumphteam.docsly.serializable.SerializableClass
-import dev.triumphteam.docsly.serializable.SerializableEnum
-import dev.triumphteam.docsly.serializable.SerializableEnumEntry
-import dev.triumphteam.docsly.serializable.SerializableFunction
-import dev.triumphteam.docsly.serializable.SerializableInterface
-import dev.triumphteam.docsly.serializable.SerializableObject
-import dev.triumphteam.docsly.serializable.SerializablePackage
-import dev.triumphteam.docsly.serializable.SerializableParameter
-import dev.triumphteam.docsly.serializable.SerializableProperty
-import dev.triumphteam.docsly.serializable.SerializableTypeAlias
-import dev.triumphteam.docsly.serializable.SuperType
+import dev.triumphteam.docsly.elements.ClassKind
+import dev.triumphteam.docsly.elements.ClassLike
+import dev.triumphteam.docsly.elements.Language
+import dev.triumphteam.docsly.elements.Modifier
+import dev.triumphteam.docsly.elements.SerializableAnnotationClass
+import dev.triumphteam.docsly.elements.SerializableClass
+import dev.triumphteam.docsly.elements.SerializableEnum
+import dev.triumphteam.docsly.elements.SerializableEnumEntry
+import dev.triumphteam.docsly.elements.SerializableFunction
+import dev.triumphteam.docsly.elements.SerializableInterface
+import dev.triumphteam.docsly.elements.SerializableObject
+import dev.triumphteam.docsly.elements.SerializablePackage
+import dev.triumphteam.docsly.elements.SerializableParameter
+import dev.triumphteam.docsly.elements.SerializableProperty
+import dev.triumphteam.docsly.elements.SerializableTypeAlias
+import dev.triumphteam.docsly.elements.SuperType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -106,7 +106,6 @@ public class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
 
     // Main json instance for serializing
     private val json = Json {
-        prettyPrint = true
         explicitNulls = false
     }
 

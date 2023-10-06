@@ -13,5 +13,6 @@
         <Logger name="io.netty" level="INFO"/>
         <Logger name="com.zaxxer.hikari" level="INFO"/>
         <Logger name="Exposed" level="INFO"/>
+        <Logger name="ktor.application" level="DEBUG" />
     </Loggers>
 </Configuration>

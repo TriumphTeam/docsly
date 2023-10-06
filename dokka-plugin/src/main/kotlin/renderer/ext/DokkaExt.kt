@@ -24,10 +24,10 @@
 package dev.triumphteam.docsly.renderer.ext
 
 import dev.triumphteam.docsly.KOTLIN_EXTENSION
-import dev.triumphteam.docsly.serializable.Language
-import dev.triumphteam.docsly.serializable.Modifier
-import dev.triumphteam.docsly.serializable.Path
-import dev.triumphteam.docsly.serializable.Visibility
+import dev.triumphteam.docsly.elements.Language
+import dev.triumphteam.docsly.elements.Modifier
+import dev.triumphteam.docsly.elements.Path
+import dev.triumphteam.docsly.elements.Visibility
 import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.dokka.links.DRI
 import org.jetbrains.dokka.model.AdditionalModifiers

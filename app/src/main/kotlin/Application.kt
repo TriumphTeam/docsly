@@ -23,42 +23,79 @@
  */
 package dev.triumphteam.docsly
 
-import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
+import dev.triumphteam.docsly.controller.apiGuild
+import dev.triumphteam.docsly.defaults.Defaults
 import dev.triumphteam.docsly.meilisearch.Meili
-import dev.triumphteam.docsly.resource.Api
+import dev.triumphteam.docsly.project.Projects
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.path
 import io.ktor.server.resources.Resources
-import io.ktor.server.resources.get
-import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
+import kotlinx.serialization.Serializable
+import org.slf4j.event.Level
 
 private val config = createOrGetConfig()
 
 public fun main() {
-    embeddedServer(Netty, port = config.port, host = config.host, module = Application::module).start(wait = true)
+    embeddedServer(CIO, port = config.port, host = config.host, module = Application::module).start(wait = true)
 }
 
 public fun Application.module() {
-    Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
+    // Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
 
-    install(Meili) { config(config.meili) }
+    /*install(CORS) {
+        anyHost()
+        allowHeader(HttpHeaders.ContentType)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+    }*/
+
     install(Resources)
+    install(ContentNegotiation) {
+        json()
+    }
+    install(CallLogging) {
+        level = Level.DEBUG
+        filter { call -> call.request.path().startsWith("/") }
+    }
+
+    install(Meili) { from(config.meili) }
+    install(Defaults)
+    install(Projects)
 
     routing {
-        get<Api.Index.Search> {
+
+        // Setup guild api/routing
+        apiGuild()
+
+        /*get<Api.Index.Search> {
             // Here you handle the "api/{index}/search" endpoint
 
             // Getting the index passed
-            // search<String>(it.parent.index, "")
-            transaction {
-                // DocDao.find { DocsTable.name eq "Ass" }.firstOrNull()
-            }
-        }
+            *//*val test = index("test").searchFull<String>("e", null)
+            // val test = search<List<Test>>(it.parent.index, "e")
+            println(test)*//*
+
+            index("test").addDocuments(
+                listOf(
+                    Test("Hello"),
+                    Test("there"),
+                    Test("thing"),
+                ),
+                primaryKey = "boy",
+            )
+
+            call.respond(HttpStatusCode.Accepted)
+        }*/
     }
 }
+
+@Serializable
+public data class Test(val boy: String)

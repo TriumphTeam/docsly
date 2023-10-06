@@ -70,33 +70,35 @@ public class MeiliClient(
     public fun index(
         uid: String,
         primaryKey: String? = null,
-        searchableAttributes: List<String>? = null,
-    ): Index = Index(uid, primaryKey, searchableAttributes)
+    ): Index = Index(uid, primaryKey)
 
     /** Representation of an index. Contains the needed operations with the index. */
     public inner class Index(
         public val uid: String,
         public val primaryKey: String?,
-        private val searchableAttributes: List<String>? = null,
     ) {
 
         /** Create the index. Success even if it already exists. */
         public suspend fun create(): HttpResponse = client.post(Indexes()) {
-            setBody(Create(uid, primaryKey, searchableAttributes))
+            contentType(ContentType.Application.Json)
+            setBody(Create(uid, primaryKey))
+        }.also {
+            println(it)
         }
 
         /** Deletes the current index. Success even if it doesn't exist. */
         public suspend fun delete(): HttpResponse = client.delete(Indexes.Uid(uid = uid))
 
         /** Search for specific content in the index. */
-        public suspend inline fun <reified T> search(query: String, filter: Map<String, String>): List<T> {
+        public suspend inline fun <reified T> search(query: String, filter: String?): List<T> {
             return searchFull<T>(query, filter).hits
         }
 
         /** [search] but returns all the data ([SearchResult]) provided by the search. */
-        public suspend inline fun <reified T> searchFull(query: String, filter: Map<String, String>): SearchResult<T> {
+        public suspend inline fun <reified T> searchFull(query: String, filter: String?): SearchResult<T> {
             // TODO: Handle errors.
             return client.post(Indexes.Uid.Search(Indexes.Uid(uid = uid))) {
+                contentType(ContentType.Application.Json)
                 setBody(SearchRequest(query, filter))
             }.body()
         }
@@ -111,9 +113,11 @@ public class MeiliClient(
             }
 
             return client.post(Indexes.Uid.Documents(Indexes.Uid(uid = uid))) {
-                contentType(ContentType.Application.Json) // Json body
+                contentType(ContentType.Application.Json)
                 parameter(PRIMARY_KEY_PARAM, pk)
                 setBody(documents)
+            }.also {
+                println(it)
             }
         }
 
@@ -168,7 +172,6 @@ public class MeiliClient(
     public data class Create(
         val uid: String,
         val primaryKey: String?,
-        val searchableAttributes: List<String>?,
     )
 
     /** Serializable class for the search result from end point. */
@@ -186,7 +189,7 @@ public class MeiliClient(
     @Serializable
     public data class SearchRequest(
         public val q: String,
-        public val filter: Map<String, String>,
+        public val filter: String?,
     )
 
     /** Serializable class for the swap end point. */

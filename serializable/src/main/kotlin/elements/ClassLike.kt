@@ -21,103 +21,131 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.docsly.serializable
+package dev.triumphteam.docsly.elements
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** A serializable member of a [ClassLike] element. */
+/** A [ClassLike] represents any element that behaves like a Class. */
 @Serializable
-public sealed interface SerializableMember :
+public sealed interface ClassLike :
     DocElementWithLanguage,
     WithDocumentation,
     WithVisibility,
-    WithExtraDocs,
-    WithGenerics,
-    WithAnnotations
+    WithAnnotations,
+    WithModifiers,
+    WithExtraDocs {
 
-/**
- * A property!
- * Java fields are also considered "properties" here, but fast simpler.
- */
+    override fun createReferences(): List<String> {
+        return listOf(
+            name,
+            "${path.packagePath}.$name"
+        )
+    }
+}
+
+/** A serializable object that contains all information needed to describe a class. */
 @Serializable
-@SerialName("PROPERTY")
-public data class SerializableProperty(
+@SerialName("CLASS")
+public data class SerializableClass(
     override val location: String,
     override val path: Path,
     override val language: Language,
     override val name: String,
-    public val setter: SerializableFunction?,
-    public val getter: SerializableFunction?,
+    override val constructors: List<SerializableFunction>,
+    override val companion: ClassLike?,
     override val visibility: Visibility,
-    @SerialName("class") override val type: SerializableType,
-    override val receiver: SerializableType?,
+    override val annotations: List<SerializableAnnotation>,
+    override val generics: List<GenericType>,
+    override val modifiers: Set<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+    override val superTypes: List<SuperType>,
+) : ClassLike, WithConstructors, WithCompanion, WithGenerics, WithSuperTypes
+
+/** A serializable object that contains all information needed to describe an annotation class. */
+@Serializable
+@SerialName("ANNOTATION")
+public data class SerializableAnnotationClass(
+    override val location: String,
+    override val path: Path,
+    override val language: Language,
+    override val name: String,
+    override val constructors: List<SerializableFunction>,
+    override val companion: ClassLike?,
+    override val visibility: Visibility,
+    override val annotations: List<SerializableAnnotation>,
+    override val generics: List<GenericType>,
+    override val modifiers: Set<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+) : ClassLike, WithConstructors, WithCompanion, WithGenerics
+
+/** A serializable object that contains all information needed to describe an enum. */
+@Serializable
+@SerialName("ENUM")
+public data class SerializableEnum(
+    override val location: String,
+    override val path: Path,
+    override val language: Language,
+    override val name: String,
+    override val constructors: List<SerializableFunction>,
+    override val companion: ClassLike?,
+    override val visibility: Visibility,
+    override val annotations: List<SerializableAnnotation>,
+    override val modifiers: Set<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+    override val superTypes: List<SuperType>,
+) : ClassLike, WithConstructors, WithCompanion, WithSuperTypes
+
+/** A serializable object that contains all information needed to describe an object. */
+@Serializable
+@SerialName("OBJECT")
+public data class SerializableObject(
+    override val location: String,
+    override val path: Path,
+    override val language: Language,
+    override val name: String,
+    override val visibility: Visibility,
+    override val annotations: List<SerializableAnnotation>,
+    override val modifiers: Set<Modifier>,
+    override val documentation: DescriptionDocumentation?,
+    override val extraDocumentation: List<Documentation>,
+    override val superTypes: List<SuperType>,
+) : ClassLike, WithSuperTypes
+
+/** A serializable object that contains all information needed to describe an interface. */
+@Serializable
+@SerialName("INTERFACE")
+public data class SerializableInterface(
+    override val location: String,
+    override val path: Path,
+    override val language: Language,
+    override val name: String,
+    override val companion: ClassLike?,
+    override val visibility: Visibility,
     override val annotations: List<SerializableAnnotation>,
     override val generics: List<GenericType>,
     override val modifiers: Set<Modifier>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : SerializableMember, WithType<SerializableType>, WithReceiver, WithModifiers
+    override val superTypes: List<SuperType>,
+) : ClassLike, WithCompanion, WithGenerics, WithSuperTypes
 
-/**
- * A function!
- * Java methods are also considered "functions" here.
- * One of the main documentables of a language.
- */
+/** Due to how super types work, it is also needed to save the [kind] of supertype it is. */
 @Serializable
-@SerialName("FUNCTION")
-public data class SerializableFunction(
-    override val location: String,
-    override val path: Path,
-    override val language: Language,
-    override val name: String,
-    public val parameters: List<SerializableParameter> = emptyList(),
-    override val visibility: Visibility,
-    @SerialName("class") override val type: SerializableType?,
-    override val receiver: SerializableType?,
-    override val annotations: List<SerializableAnnotation>,
-    override val generics: List<GenericType>,
-    override val modifiers: Set<Modifier>,
-    override val documentation: DescriptionDocumentation?,
-    override val extraDocumentation: List<Documentation>,
-) : SerializableMember, WithType<SerializableType?>, WithReceiver, WithModifiers
+public data class SuperType(@SerialName("name") val type: SerializableType, val kind: ClassKind)
 
-/** A function parameter. */
+/** Which kind of type is being used as supertype of a [WithSuperTypes]. */
 @Serializable
-public data class SerializableParameter(
-    override val name: String,
-    @SerialName("class") public val type: SerializableType,
-    override val annotations: List<SerializableAnnotation>,
-    override val modifiers: Set<Modifier>,
-    override val documentation: DescriptionDocumentation?,
-) : WithAnnotations, WithModifiers, WithDocumentation, WithName
+public enum class ClassKind {
+    CLASS, INTERFACE, ENUM_CLASS, ENUM_ENTRY, ANNOTATION_CLASS, // Common
+    OBJECT; // Kt only
 
-/** Serializable class to represent Kotlin's `typealias`. */
-@Serializable
-@SerialName("TYPE_ALIAS")
-public data class SerializableTypeAlias(
-    override val location: String,
-    override val path: Path,
-    override val language: Language,
-    override val name: String,
-    @SerialName("class") override val type: SerializableType,
-    @SerialName("underlyingClass") public val underlyingType: SerializableType,
-    override val visibility: Visibility,
-    override val annotations: List<SerializableAnnotation>,
-    override val generics: List<GenericType>,
-    override val documentation: DescriptionDocumentation?,
-    override val extraDocumentation: List<Documentation>,
-) : SerializableMember, WithType<SerializableType>
+    public companion object {
+        private val MAPPED_VALUES = ClassKind.values().associateBy { it.name }
 
-/** Serializable class with the data of an enum entry. */
-@Serializable
-@SerialName("ENUM_ENTRY")
-public data class SerializableEnumEntry(
-    override val location: String,
-    override val path: Path,
-    override val name: String,
-    override val annotations: List<SerializableAnnotation>,
-    override val modifiers: Set<Modifier>,
-    override val documentation: DescriptionDocumentation?,
-    override val extraDocumentation: List<Documentation>,
-) : DocElement, WithDocumentation, WithExtraDocs, WithAnnotations, WithModifiers
+        public fun fromString(name: String): ClassKind? = MAPPED_VALUES[name]
+    }
+}

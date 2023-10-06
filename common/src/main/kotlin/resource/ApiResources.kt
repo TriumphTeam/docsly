@@ -28,17 +28,32 @@ import kotlinx.serialization.Serializable
 
 /** Resource location for "/api". */
 @Serializable
-@Resource("/api")
-public class Api {
+@Resource("/api/guild")
+public class GuildApi {
 
-    /** Resource location for "/api/[index]". */
+    /** Resource location for "/api/[guild]". */
     @Serializable
-    @Resource("{index}")
-    public class Index(public val parent: Api = Api(), public val index: String) {
+    @Resource("{guild}")
+    public class Guild(public val parent: GuildApi = GuildApi(), public val guild: String) {
 
-        /** Resource location for "/api/[index]/search". */
+        /** Resource location for "/api/[guild]/setup". */
         @Serializable
-        @Resource("/search")
-        public class Search(public val parent: Index)
+        @Resource("setup")
+        public class Setup(public val parent: Guild)
+
+        /** Resource location for "/api/[guild]/[index]/[version]". *//*
+        @Serializable
+        @Resource("{project}/{version}")
+        public class Project(
+            public val parent: Guild,
+            public val index: String,
+            public val version: String,
+        ) {
+
+            *//** Resource location for "/api/[guild]/[index]/[version]/search". *//*
+            @Serializable
+            @Resource("search")
+            public class Search(public val parent: Project)
+        }*/
     }
 }

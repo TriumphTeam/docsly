@@ -23,18 +23,18 @@
  */
 package dev.triumphteam.docsly.renderer.ext
 
-import dev.triumphteam.docsly.serializable.AuthorDocumentation
-import dev.triumphteam.docsly.serializable.CustomDocumentation
-import dev.triumphteam.docsly.serializable.DeprecatedDocumentation
-import dev.triumphteam.docsly.serializable.DescriptionDocumentation
-import dev.triumphteam.docsly.serializable.Documentation
-import dev.triumphteam.docsly.serializable.ReceiverDocumentation
-import dev.triumphteam.docsly.serializable.ReturnDocumentation
-import dev.triumphteam.docsly.serializable.SampleDocumentation
-import dev.triumphteam.docsly.serializable.SeeDocumentation
-import dev.triumphteam.docsly.serializable.SinceDocumentation
-import dev.triumphteam.docsly.serializable.ThrowsDocumentation
-import dev.triumphteam.docsly.serializable.VersionDocumentation
+import dev.triumphteam.docsly.elements.AuthorDocumentation
+import dev.triumphteam.docsly.elements.CustomDocumentation
+import dev.triumphteam.docsly.elements.DeprecatedDocumentation
+import dev.triumphteam.docsly.elements.DescriptionDocumentation
+import dev.triumphteam.docsly.elements.Documentation
+import dev.triumphteam.docsly.elements.ReceiverDocumentation
+import dev.triumphteam.docsly.elements.ReturnDocumentation
+import dev.triumphteam.docsly.elements.SampleDocumentation
+import dev.triumphteam.docsly.elements.SeeDocumentation
+import dev.triumphteam.docsly.elements.SinceDocumentation
+import dev.triumphteam.docsly.elements.ThrowsDocumentation
+import dev.triumphteam.docsly.elements.VersionDocumentation
 import org.jetbrains.dokka.model.DParameter
 import org.jetbrains.dokka.model.Documentable
 import org.jetbrains.dokka.model.doc.Author

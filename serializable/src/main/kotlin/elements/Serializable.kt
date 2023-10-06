@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.docsly.serializable
+package dev.triumphteam.docsly.elements
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -34,6 +34,9 @@ public sealed interface DocElement : WithName {
 
     /** The virtual path of the serializable within the codebase. */
     public val path: Path
+
+    /** Create a list of possible search references for the doc element. */
+    public fun createReferences(): List<String>
 }
 
 /** A [DocElement] that also contains language details. */
@@ -56,7 +59,12 @@ public data class SerializablePackage(
     override val annotations: List<SerializableAnnotation>,
     override val documentation: DescriptionDocumentation?,
     override val extraDocumentation: List<Documentation>,
-) : DocElement, WithDocumentation, WithExtraDocs, WithAnnotations
+) : DocElement, WithDocumentation, WithExtraDocs, WithAnnotations {
+
+    override fun createReferences(): List<String> {
+        return listOf(name)
+    }
+}
 
 /** Possible documentation languages. */
 @Serializable

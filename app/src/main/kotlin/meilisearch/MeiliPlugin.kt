@@ -25,6 +25,7 @@ package dev.triumphteam.docsly.meilisearch
 
 import dev.triumphteam.docsly.config.MeiliConfig
 import io.ktor.http.URLProtocol
+import io.ktor.serialization.Configuration
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.BaseApplicationPlugin
@@ -43,7 +44,7 @@ public class Meili(config: Configuration) {
         private var apiKey: String = "masterKey"
         private var protocol: URLProtocol = URLProtocol.HTTP
 
-        public fun config(config: MeiliConfig) {
+        public fun from(config: MeiliConfig) {
             host = config.host
             port = config.port
             apiKey = config.apiKey
@@ -66,7 +67,10 @@ public class Meili(config: Configuration) {
 public suspend inline fun <reified T> PipelineContext<*, ApplicationCall>.search(
     index: String,
     query: String,
-    filter: Map<String, String> = emptyMap(),
+    filter: String? = null,
 ): List<T> = with(this.application.plugin(Meili).client) {
     return index(index).search(query, filter)
 }
+
+public suspend inline fun PipelineContext<*, ApplicationCall>.index(index: String): MeiliClient.Index =
+    application.plugin(Meili).client.index(index)
