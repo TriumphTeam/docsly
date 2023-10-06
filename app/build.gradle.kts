@@ -13,4 +13,5 @@ dependencies {
     implementation(libs.bundles.logger)
 
     implementation(libs.bundles.database)
+    implementation("io.ktor:ktor-client-logging-jvm:2.3.4")
 }

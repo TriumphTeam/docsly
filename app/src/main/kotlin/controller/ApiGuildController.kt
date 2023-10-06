@@ -13,7 +13,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 
 public fun Routing.apiGuild() {
-
     val defaults = plugin(Defaults)
     val projects = plugin(Projects)
 

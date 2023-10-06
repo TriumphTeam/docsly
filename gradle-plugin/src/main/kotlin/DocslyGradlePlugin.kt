@@ -34,7 +34,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 
 private const val DOKKA_ID = "org.jetbrains.dokka"
-private const val DOCLOPEDIA_DOKKA = "dev.triumphteam:docsly-dokka-plugin:0.0.2"
+private const val DOCSLY_DOKKA_PLUGIN_VERSION = "dev.triumphteam:docsly-dokka-plugin:0.0.3"
 
 public open class DocslyGradlePlugin : Plugin<Project> {
 
@@ -44,7 +44,7 @@ public open class DocslyGradlePlugin : Plugin<Project> {
         }
 
         setupDokkaTask("dokkaDocsly") {
-            plugins.dependencies.add(project.dependencies.create(DOCLOPEDIA_DOKKA))
+            plugins.dependencies.add(project.dependencies.create(DOCSLY_DOKKA_PLUGIN_VERSION))
             description = "Generates JSON documentation to be used by Docsly."
         }
     }

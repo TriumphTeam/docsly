@@ -38,9 +38,9 @@ public sealed interface SerializableMember :
 
     override fun createReferences(): List<String> {
         return listOf(
-            name,
-            createReference("."),
             createReference("#"),
+            createReference("."),
+            name,
         )
     }
 
@@ -147,7 +147,6 @@ public data class SerializableEnumEntry(
 
     override fun createReferences(): List<String> {
         return listOf(
-            name,
             buildString {
                 append(path.packagePath)
 
@@ -158,7 +157,8 @@ public data class SerializableEnumEntry(
 
                 append("#")
                 append(name)
-            }
+            },
+            name,
         )
     }
 }

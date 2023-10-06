@@ -30,6 +30,10 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.resources.Resources
 import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.post
@@ -56,6 +60,10 @@ public class MeiliClient(
         install(Resources)
         install(Auth) { api(apiKey) } // Auto setup authentication
         install(ContentNegotiation) { json() } // Using Kotlin serialization for content negotiation
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.BODY
+        }
 
         defaultRequest {
             this.host = host
@@ -114,10 +122,11 @@ public class MeiliClient(
 
             return client.post(Indexes.Uid.Documents(Indexes.Uid(uid = uid))) {
                 contentType(ContentType.Application.Json)
-                parameter(PRIMARY_KEY_PARAM, pk)
-                setBody(documents)
+                pk?.let { parameter(PRIMARY_KEY_PARAM, it) }
+                setBody<List<T>>(documents)
             }.also {
                 println(it)
+                println(it.body<String>())
             }
         }
 

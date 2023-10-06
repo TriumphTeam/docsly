@@ -75,6 +75,7 @@ public data class GenericType(
 
 /** A start type, or Java wildcard. */
 @Serializable
+@SerialName("STAR")
 public object StarType : SerializableType
 
 /** The type of projection to be used. */

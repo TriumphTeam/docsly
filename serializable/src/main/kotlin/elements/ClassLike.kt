@@ -38,8 +38,8 @@ public sealed interface ClassLike :
 
     override fun createReferences(): List<String> {
         return listOf(
+            "${path.packagePath}.$name",
             name,
-            "${path.packagePath}.$name"
         )
     }
 }

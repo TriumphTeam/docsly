@@ -24,17 +24,6 @@
 package dev.triumphteam.docsly.renderer
 
 import dev.triumphteam.docsly.DocslyDokkaPlugin
-import dev.triumphteam.docsly.renderer.ext.description
-import dev.triumphteam.docsly.renderer.ext.extraModifiers
-import dev.triumphteam.docsly.renderer.ext.finalVisibility
-import dev.triumphteam.docsly.renderer.ext.getDocumentation
-import dev.triumphteam.docsly.renderer.ext.language
-import dev.triumphteam.docsly.renderer.ext.returnType
-import dev.triumphteam.docsly.renderer.ext.serialGenerics
-import dev.triumphteam.docsly.renderer.ext.toPath
-import dev.triumphteam.docsly.renderer.ext.toSerialAnnotations
-import dev.triumphteam.docsly.renderer.ext.toSerialModifiers
-import dev.triumphteam.docsly.renderer.ext.toSerialType
 import dev.triumphteam.docsly.elements.ClassKind
 import dev.triumphteam.docsly.elements.ClassLike
 import dev.triumphteam.docsly.elements.Language
@@ -51,6 +40,17 @@ import dev.triumphteam.docsly.elements.SerializableParameter
 import dev.triumphteam.docsly.elements.SerializableProperty
 import dev.triumphteam.docsly.elements.SerializableTypeAlias
 import dev.triumphteam.docsly.elements.SuperType
+import dev.triumphteam.docsly.renderer.ext.description
+import dev.triumphteam.docsly.renderer.ext.extraModifiers
+import dev.triumphteam.docsly.renderer.ext.finalVisibility
+import dev.triumphteam.docsly.renderer.ext.getDocumentation
+import dev.triumphteam.docsly.renderer.ext.language
+import dev.triumphteam.docsly.renderer.ext.returnType
+import dev.triumphteam.docsly.renderer.ext.serialGenerics
+import dev.triumphteam.docsly.renderer.ext.toPath
+import dev.triumphteam.docsly.renderer.ext.toSerialAnnotations
+import dev.triumphteam.docsly.renderer.ext.toSerialModifiers
+import dev.triumphteam.docsly.renderer.ext.toSerialType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope

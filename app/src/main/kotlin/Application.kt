@@ -23,8 +23,10 @@
  */
 package dev.triumphteam.docsly
 
+import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
 import dev.triumphteam.docsly.controller.apiGuild
+import dev.triumphteam.docsly.database.entity.DocsTable
 import dev.triumphteam.docsly.defaults.Defaults
 import dev.triumphteam.docsly.meilisearch.Meili
 import dev.triumphteam.docsly.project.Projects
@@ -39,6 +41,9 @@ import io.ktor.server.request.path
 import io.ktor.server.resources.Resources
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.event.Level
 
 private val config = createOrGetConfig()
@@ -48,7 +53,11 @@ public fun main() {
 }
 
 public fun Application.module() {
-    // Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
+    Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
+
+    transaction {
+        SchemaUtils.create(DocsTable)
+    }
 
     /*install(CORS) {
         anyHost()
@@ -71,7 +80,6 @@ public fun Application.module() {
     install(Projects)
 
     routing {
-
         // Setup guild api/routing
         apiGuild()
 
