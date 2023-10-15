@@ -80,7 +80,7 @@ public enum class Visibility {
     PACKAGE; // Java only
 
     public companion object {
-        private val MAPPED_VALUES = values().associateBy { it.name.lowercase() }
+        private val MAPPED_VALUES = entries.associateBy { it.name.lowercase() }
 
         /** If the type is empty it'll be Java's [PACKAGE], else we take it from the mapped values. */
         public fun fromString(name: String): Visibility? = if (name.isEmpty()) PACKAGE else MAPPED_VALUES[name]
@@ -89,18 +89,41 @@ public enum class Visibility {
 
 /** Shout out to non-sealed for being the odd one out and needing [displayName], thanks Java. */
 @Serializable
-public enum class Modifier(public val displayName: String? = null) {
+public enum class Modifier(public val order: Int, public val displayName: String? = null) {
+    // COMMON
+
+    OPEN(0), FINAL(0), ABSTRACT(0), SEALED(0),
+
     // KOTLIN ONLY
-    INLINE, VALUE, INFIX, EXTERNAL, SUSPEND, REIFIED, CROSSINLINE, NOINLINE, OVERRIDE, DATA, CONST, INNER, LATEINIT, OPERATOR, TAILREC, VARARG,
+
+    REIFIED(0), CROSSINLINE(0), NOINLINE(0),
+
+    CONST(0),
+    EXTERNAL(1),
+    OVERRIDE(2),
+    LATEINIT(3),
+    TAILREC(4),
+    VARARG(5),
+    SUSPEND(6),
+    INNER(7),
+
+    FUN(8), ENUM(8), ANNOTATION(8),
+
+    COMPANION(9),
+    INLINE(10), VALUE(10),
+    INFIX(11),
+    DATA(13), OPERATOR(12),
 
     // JAVA ONLY
-    STATIC, NATIVE, SYNCHRONIZED, STRICTFP, TRANSIENT, VOLATILE, TRANSITIVE, RECORD, NONSEALED("non-sealed"), DEFAULT,
 
-    // COMMON
-    OPEN, FINAL, ABSTRACT, SEALED;
+    STATIC(0), NATIVE(0), SYNCHRONIZED(0), STRICTFP(0),
+    TRANSIENT(0), VOLATILE(0), TRANSITIVE(0), RECORD(0),
+    NONSEALED(0, "non-sealed"), DEFAULT(0)
+
+    ;
 
     public companion object {
-        private val MAPPED_VALUES = values().associateBy { it.displayName ?: it.name.lowercase() }
+        private val MAPPED_VALUES = entries.associateBy { it.displayName ?: it.name.lowercase() }
 
         public fun fromString(name: String): Modifier? = MAPPED_VALUES[name]
     }

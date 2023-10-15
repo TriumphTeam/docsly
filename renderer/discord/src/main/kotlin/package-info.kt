@@ -21,44 +21,4 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package dev.triumphteam.docsly.resource
-
-import io.ktor.resources.Resource
-import kotlinx.serialization.Serializable
-
-/** Resource location for "/api". */
-@Serializable
-@Resource("/api/guild")
-public class GuildApi {
-
-    /** Resource location for "/api/[guild]". */
-    @Serializable
-    @Resource("{guild}")
-    public class Guild(public val parent: GuildApi = GuildApi(), public val guild: String) {
-
-        /** Resource location for "/api/[guild]/setup". */
-        @Serializable
-        @Resource("setup")
-        public class Setup(public val parent: Guild)
-
-        @Serializable
-        @Resource("projects")
-        public class Projects(public val parent: Guild)
-
-        @Serializable
-        @Resource("search")
-        public class Search(
-            public val parent: Guild,
-            public val project: String = "",
-            public val query: String = "",
-            public val version: String? = null,
-        )
-
-        @Serializable
-        @Resource("document/{id}")
-        public class Document(
-            public val parent: Guild,
-            public val id: Long,
-        )
-    }
-}
+package dev.triumphteam.docsly.renderer

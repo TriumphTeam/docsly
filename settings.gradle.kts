@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.bouncycastle.asn1.x500.style.RFC4519Style.name
+
 dependencyResolutionManagement {
     includeBuild("build-logic")
     repositories.gradlePluginPortal()
@@ -22,16 +24,20 @@ listOf(
     "common",
 
     "app",
-    "discord"
+    "discord",
+
+    "renderer/discord"
 ).forEach {
     includeProject(it)
 }
 
 include("test-module")
 
-fun includeProject(name: String) {
+fun includeProject(path: String) {
+    val name = path.replace("/", "-")
     include(name) {
         this.name = "${rootProject.name}-$name"
+        this.projectDir = file(path)
     }
 }
 

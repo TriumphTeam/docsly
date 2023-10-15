@@ -26,7 +26,8 @@ package dev.triumphteam.docsly
 import com.zaxxer.hikari.HikariDataSource
 import dev.triumphteam.docsly.config.createOrGetConfig
 import dev.triumphteam.docsly.controller.apiGuild
-import dev.triumphteam.docsly.database.entity.DocsTable
+import dev.triumphteam.docsly.database.entity.DocumentsTable
+import dev.triumphteam.docsly.database.entity.ProjectsTable
 import dev.triumphteam.docsly.defaults.Defaults
 import dev.triumphteam.docsly.meilisearch.Meili
 import dev.triumphteam.docsly.project.Projects
@@ -56,7 +57,10 @@ public fun Application.module() {
     Database.connect(HikariDataSource(config.postgres.toHikariConfig()))
 
     transaction {
-        SchemaUtils.create(DocsTable)
+        SchemaUtils.create(
+            ProjectsTable,
+            DocumentsTable,
+        )
     }
 
     /*install(CORS) {

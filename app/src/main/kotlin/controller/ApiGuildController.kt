@@ -1,48 +1,59 @@
 package dev.triumphteam.docsly.controller
 
-import dev.triumphteam.docsly.api.GuildSetupRequest
+import dev.triumphteam.docsly.database.entity.DocumentEntity
 import dev.triumphteam.docsly.defaults.Defaults
+import dev.triumphteam.docsly.elements.DocElement
+import dev.triumphteam.docsly.meilisearch.Meili
+import dev.triumphteam.docsly.project.DocumentSearchResult
+import dev.triumphteam.docsly.project.IndexDocument
 import dev.triumphteam.docsly.project.Projects
 import dev.triumphteam.docsly.resource.GuildApi
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.application.plugin
-import io.ktor.server.request.receive
+import io.ktor.server.resources.get
 import io.ktor.server.resources.post
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
+import org.jetbrains.exposed.sql.transactions.transaction
 
 public fun Routing.apiGuild() {
     val defaults = plugin(Defaults)
     val projects = plugin(Projects)
+    val meili = plugin(Meili)
 
-    post<GuildApi.Guild.Setup> { setup ->
-        val guild = setup.parent.guild
-        val setupDefaults = call.receive<GuildSetupRequest>().defaults
-
-        val defaultProjects = defaults.defaultProjects()
-
-        // Validate data
-        setupDefaults.forEach { (project, versions) ->
-            val defaultVersions = defaultProjects[project] ?: run {
-                call.respond(HttpStatusCode.BadRequest, "Invalid default project '$project'.")
-                return@post
-            }
-
-            versions.forEach { version ->
-                // TODO: Figure better way to get version, and not use folder name
-                val replaced = version.replace(".", "_")
-                if (replaced !in defaultVersions) {
-                    call.respond(HttpStatusCode.BadRequest, "Invalid default project version '$version' for project '$project'.")
-                    return@post
-                }
-            }
-        }
-
+    post<GuildApi.Guild.Setup> { api ->
         // If it goes well nothing will throw and it'll work well!
-        projects.setupProjects(guild, setupDefaults)
+        projects.setup(api.parent.guild, defaults)
 
         // So we return "accepted"
         call.respond(HttpStatusCode.Accepted)
+    }
+
+    get<GuildApi.Guild.Projects> { api ->
+        call.respond(projects.getProjects(api.parent.guild))
+    }
+
+    get<GuildApi.Guild.Search> { api ->
+        val project = projects.getProject(api.parent.guild, api.project, api.version) ?: run {
+            call.respond(HttpStatusCode.BadRequest)
+            return@get
+        }
+
+        val index = meili.client.index(Projects.indexKeyFor(api.parent.guild, project))
+
+        val result = index.search<IndexDocument>(api.query, null)
+            .map { DocumentSearchResult(it.references.first(), it.id) }
+            .take(20)
+
+        call.respond(result)
+    }
+
+    get<GuildApi.Guild.Document> { api ->
+        val document = transaction {
+            DocumentEntity[api.id]
+        }
+
+        call.respond<DocElement>(document.document)
     }
 }

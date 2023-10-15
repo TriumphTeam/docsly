@@ -29,12 +29,11 @@ license {
     include("**/*.kt")
 }
 
-java {
-    targetCompatibility = JavaVersion.VERSION_1_8
-    withSourcesJar()
-}
-
 kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+
     explicitApi()
 }
 
@@ -63,8 +62,6 @@ spotless {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "1.8"
-            languageVersion = "1.8"
             javaParameters = true
             freeCompilerArgs = listOf(
                 "-Xcontext-receivers",
