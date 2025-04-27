@@ -1,9 +1,6 @@
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-// Hack which exposes `libs` to this convention plugin
-val libs = the<LibrariesForLibs>()
-
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")

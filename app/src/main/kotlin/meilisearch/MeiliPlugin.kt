@@ -25,11 +25,9 @@ package dev.triumphteam.docsly.meilisearch
 
 import dev.triumphteam.docsly.config.MeiliConfig
 import io.ktor.http.URLProtocol
-import io.ktor.serialization.Configuration
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.BaseApplicationPlugin
-import io.ktor.server.application.application
 import io.ktor.server.application.plugin
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelineContext
@@ -68,9 +66,9 @@ public suspend inline fun <reified T> PipelineContext<*, ApplicationCall>.search
     index: String,
     query: String,
     filter: String? = null,
-): List<T> = with(this.application.plugin(Meili).client) {
+): List<T> = with(context.application.plugin(Meili).client) {
     return index(index).search(query, filter)
 }
 
 public suspend inline fun PipelineContext<*, ApplicationCall>.index(index: String): MeiliClient.Index =
-    application.plugin(Meili).client.index(index)
+    context.application.plugin(Meili).client.index(index)

@@ -9,8 +9,6 @@ import dev.triumphteam.docsly.project.IndexDocument
 import dev.triumphteam.docsly.project.Projects
 import dev.triumphteam.docsly.resource.GuildApi
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.application.plugin
 import io.ktor.server.resources.get
 import io.ktor.server.resources.post
 import io.ktor.server.response.respond

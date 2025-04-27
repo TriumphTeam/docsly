@@ -36,9 +36,10 @@ import org.jetbrains.dokka.model.ExtraModifiers
 import org.jetbrains.dokka.model.WithSources
 import org.jetbrains.dokka.model.WithVisibility
 import org.jetbrains.dokka.model.properties.WithExtraProperties
+import kotlin.collections.flatten
 
 /** Simple extension to turn Dokka modifiers into serializable ones. */
-public fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers.KotlinOnlyModifiers>>.toSerialModifiers(): List<Modifier> =
+public fun Map<DokkaConfiguration.DokkaSourceSet, Set<ExtraModifiers>>.toSerialModifiers(): List<Modifier> =
     values.flatten().mapNotNull { Modifier.fromString(it.name) }
 
 public val <T : Documentable> WithExtraProperties<T>.extraModifiers: List<Modifier>

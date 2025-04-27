@@ -35,6 +35,7 @@ import dev.triumphteam.docsly.elements.Nullability
 import dev.triumphteam.docsly.elements.SerializableType
 import dev.triumphteam.docsly.elements.StarType
 import dev.triumphteam.docsly.elements.TypeAliasType
+import dev.triumphteam.docsly.renderer.ext.toSerialModifiers
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.annotations
 import org.jetbrains.dokka.base.signatures.KotlinSignatureUtils.modifiers
 import org.jetbrains.dokka.links.DriOfUnit

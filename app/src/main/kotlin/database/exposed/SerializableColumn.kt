@@ -26,11 +26,11 @@ package dev.triumphteam.docsly.database.exposed
 import com.impossibl.postgres.jdbc.PGArray
 import dev.triumphteam.docsly.project.Projects
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.serializer
 import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.TextColumnType
+import org.jetbrains.exposed.sql.vendors.currentDialect
 import java.sql.Clob
 import kotlin.reflect.KClass
 
@@ -44,43 +44,33 @@ public inline fun <reified T : Any> Table.serializable(name: String): Column<T> 
 public class SerializableColumnType<T : Any>(
     private val klass: KClass<T>,
     private val serializer: KSerializer<T>,
-) : TextColumnType() {
+) : ColumnType<T>() {
+
+    override fun sqlType(): String = currentDialect.dataTypeProvider.textType()
 
     /** When writing the value, it can either be a full on list, or individual values. */
-    override fun notNullValueToDB(value: Any): Any = when {
+    override fun notNullValueToDB(value: T): Any = when {
         klass.isInstance(value) -> Projects.JSON.encodeToString(serializer, value as T)
         else -> error("$value of ${value::class.qualifiedName} is not an instance of ${klass.simpleName}")
     }
 
     /** When getting the value it can be more than just [PGArray]. */
-    override fun valueFromDB(value: Any): Any = when (value) {
+    override fun valueFromDB(value: Any): T = when (value) {
         is Clob -> Projects.JSON.decodeFromString(serializer, value.characterStream.readText())
         is ByteArray -> Projects.JSON.decodeFromString(serializer, String(value))
         is String -> Projects.JSON.decodeFromString(serializer, value)
-        else -> value
+        else -> error("Unknown type for value $value")
     }
 }
 
 public inline fun <reified T : Any> Table.serializableList(name: String, serializer: KSerializer<T>): Column<List<T>> =
-    registerColumn(name, SerializableListColumnType(T::class, ListSerializer(serializer)))
+    registerColumn(name, SerializableListColumnType(serializer))
 
-@Suppress("UNCHECKED_CAST")
 public class SerializableListColumnType<T : Any>(
-    private val klass: KClass<T>,
-    private val serializer: KSerializer<List<T>>,
-) : TextColumnType() {
+    private val serializer: KSerializer<T>,
+) : CollectionColumnType<T, List<T>>() {
 
-    /** When writing the value, it can either be a full on list, or individual values. */
-    override fun notNullValueToDB(value: Any): Any = when (value) {
-        is List<*> -> Projects.JSON.encodeToString(serializer, value as List<T>)
-        else -> error("$value of ${value::class.qualifiedName} is not an instance of ${klass.simpleName}")
-    }
-
-    /** When getting the value it can be more than just [PGArray]. */
-    override fun valueFromDB(value: Any): Any = when (value) {
-        is String -> Projects.JSON.decodeFromString(serializer, value)
-        else -> {
-            println("Oh boy! ${value.javaClass}")
-        }
-    }
+    override fun mapValue(stringValue: String): T? = Projects.JSON.decodeFromString(serializer, stringValue)
+    override fun mapToString(value: T): String = Projects.JSON.encodeToString(serializer, value)
+    override fun List<T>.mapCollection(): List<T> = this
 }
