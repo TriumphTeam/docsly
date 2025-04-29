@@ -1,11 +1,16 @@
 package dev.triumphteam.docsly.kord
 
 import dev.kord.core.Kord
+import dev.kord.core.behavior.interaction.suggestString
+import dev.kord.core.event.guild.GuildCreateEvent
+import dev.kord.core.event.interaction.GuildAutoCompleteInteractionCreateEvent
+import dev.kord.core.on
 import dev.kord.gateway.Intent
 import dev.kord.gateway.Intents
-import dev.triumphteam.docsly.kord.client.DocslyClient
+import dev.triumphteam.cmd.core.suggestion.SuggestionKey
+import dev.triumphteam.cmds.kord.SlashCommandManager
+import dev.triumphteam.docsly.kord.command.ImportCommand
 import dev.triumphteam.docsly.kord.command.SearchCommand
-import dev.triumphteam.docsly.kord.command.SetupCommand
 import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger(Application::class.java)
@@ -17,10 +22,27 @@ public suspend fun main() {
 
     logger.info("Logging in!")
 
-    val docslyClient = DocslyClient()
+    val commandManager = SlashCommandManager(kord)
+
+    commandManager.registerSuggestion(SuggestionKey.of("search")) { _, _ ->
+        listOf("Search for a doc.")
+    }
+
+    kord.on<GuildCreateEvent> {
+        commandManager.registerCommand(guild.id, SearchCommand())
+        commandManager.registerCommand(guild.id, ImportCommand())
+    }
+
+    /*kord.on<GuildAutoCompleteInteractionCreateEvent> {
+        interaction.suggestString {
+            choice("Search for a doc.", "search")
+        }
+    }*/
+
+    /*val docslyClient = DocslyClient()
 
     SetupCommand(kord, docslyClient)
-    SearchCommand(kord, docslyClient)
+    OldSearchCommand(kord, docslyClient)*/
 
     kord.login {
         this.intents = Intents(Intent.Guilds, Intent.DirectMessages, Intent.GuildMessages)

@@ -1,4 +1,5 @@
-import org.gradle.internal.impldep.org.bouncycastle.asn1.x500.style.RFC4519Style.name
+import dev.triumphteam.root.project
+import dev.triumphteam.root.single
 
 dependencyResolutionManagement {
     includeBuild("build-logic")
@@ -8,7 +9,7 @@ dependencyResolutionManagement {
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenLocal()
+        maven("https://repo.triumphteam.dev/releases")
     }
 }
 
@@ -16,32 +17,28 @@ rootProject.name = "docsly"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-listOf(
-    "dokka-plugin",
-    "gradle-plugin",
-
-    "serializable",
-    "common",
-
-    "app",
-    "discord",
-
-    "renderer/discord"
-).forEach {
-    includeProject(it)
+plugins {
+    id("dev.triumphteam.root.settings") version "0.0.21"
 }
+
+project(
+    namespace = "renderer",
+    groups = listOf(
+        single("discord"),
+    ),
+)
+
+project(
+    projects = listOf(
+      single("dokka-plugin"),
+      single("gradle-plugin"),
+
+      single("serializable"),
+      single("common"),
+
+      single("app"),
+      single("discord"),
+    ),
+)
 
 include("test-module")
-
-fun includeProject(path: String) {
-    val name = path.replace("/", "-")
-    include(name) {
-        this.name = "${rootProject.name}-$name"
-        this.projectDir = file(path)
-    }
-}
-
-fun include(name: String, block: ProjectDescriptor.() -> Unit) {
-    include(name)
-    project(":$name").apply(block)
-}

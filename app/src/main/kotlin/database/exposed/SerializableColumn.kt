@@ -40,7 +40,6 @@ public inline fun <reified T : Any> Table.serializable(name: String, serializer:
 public inline fun <reified T : Any> Table.serializable(name: String): Column<T> =
     registerColumn(name, SerializableColumnType(T::class, Projects.JSON.serializersModule.serializer()))
 
-@Suppress("UNCHECKED_CAST")
 public class SerializableColumnType<T : Any>(
     private val klass: KClass<T>,
     private val serializer: KSerializer<T>,
@@ -48,9 +47,9 @@ public class SerializableColumnType<T : Any>(
 
     override fun sqlType(): String = currentDialect.dataTypeProvider.textType()
 
-    /** When writing the value, it can either be a full on list, or individual values. */
+    /** When writing the value, it can either be a full on list or individual values. */
     override fun notNullValueToDB(value: T): Any = when {
-        klass.isInstance(value) -> Projects.JSON.encodeToString(serializer, value as T)
+        klass.isInstance(value) -> Projects.JSON.encodeToString(serializer, value)
         else -> error("$value of ${value::class.qualifiedName} is not an instance of ${klass.simpleName}")
     }
 

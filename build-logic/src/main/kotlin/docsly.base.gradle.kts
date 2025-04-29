@@ -1,15 +1,17 @@
-import org.gradle.accessors.dm.LibrariesForLibs
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import dev.triumphteam.root.KotlinOpt
+import dev.triumphteam.root.repository.Repository
+import dev.triumphteam.root.repository.applyRepo
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.hierynomus.license")
-    id("com.diffplug.spotless")
+    id("dev.triumphteam.root")
 }
 
 repositories {
     mavenCentral()
+    applyRepo(Repository.TRIUMPH_SNAPSHOTS)
 }
 
 dependencies {
@@ -26,15 +28,15 @@ license {
     include("**/*.kt")
 }
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+root {
+    configureKotlin {
+        explicitApi()
+        jvmVersion(21)
+        optIn(KotlinOpt.ALL)
     }
-
-    explicitApi()
 }
 
-spotless {
+/*spotless {
     format("format") {
         trimTrailingWhitespace()
         endWithNewline()
@@ -54,25 +56,4 @@ spotless {
             )
         )
     }
-}
-
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions {
-            javaParameters = true
-            freeCompilerArgs = listOf(
-                "-Xcontext-receivers",
-                "-opt-in=" + listOf(
-                    "kotlin.RequiresOptIn",
-                    "kotlin.time.ExperimentalTime",
-                    "kotlin.io.path.ExperimentalPathApi",
-                    "kotlin.io.path.ExperimentalSerializationApi",
-                    "kotlin.ExperimentalStdlibApi",
-                    "kotlinx.coroutines.ExperimentalCoroutinesApi",
-                    "kotlinx.serialization.InternalSerializationApi",
-                    "kotlinx.serialization.ExperimentalSerializationApi",
-                ).joinToString(","),
-            )
-        }
-    }
-}
+}*/

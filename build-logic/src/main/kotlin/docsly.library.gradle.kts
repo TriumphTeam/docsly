@@ -1,29 +1,29 @@
-import java.net.URI
+import dev.triumphteam.root.repository.Repository
 
 plugins {
-    kotlin("jvm")
+    id("docsly.base")
     id("org.jetbrains.dokka")
     `maven-publish`
     signing
 }
 
-val dokkaOutputDir = "${layout.buildDirectory}/dokka"
-
+// TODO fix this
+/*
 tasks {
     dokkaHtml {
         outputDirectory.set(file(dokkaOutputDir))
     }
 }
+*/
 
 val javadocJar by tasks.registering(Jar::class) {
     dependsOn(tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
-    from(dokkaOutputDir)
 }
 
-publishing {
-    publications {
-        val publication by creating(MavenPublication::class) {
+root {
+    configurePublishing {
+        configure {
             artifactId = project.name
             from(components["java"])
             artifact(javadocJar.get())
@@ -55,20 +55,11 @@ publishing {
                     url.set("https://github.com/TriumphTeam/docsly/tree/master")
                 }
             }
-        }
 
-        signing {
-            sign(publication)
-        }
-    }
+            sign()
 
-    repositories {
-        maven {
-            url = URI("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = System.getenv("SONATYPE_USER")
-                password = System.getenv("SONATYPE_PASSWORD")
-            }
+            snapshotsRepo(Repository.TRIUMPH_SNAPSHOTS)
+            releasesRepo(Repository.CENTRAL)
         }
     }
 }
