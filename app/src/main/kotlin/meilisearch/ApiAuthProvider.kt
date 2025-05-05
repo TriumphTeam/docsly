@@ -23,7 +23,7 @@
  */
 package dev.triumphteam.docsly.meilisearch
 
-import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.AuthConfig
 import io.ktor.client.plugins.auth.AuthProvider
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.headers
@@ -31,7 +31,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.auth.AuthScheme
 import io.ktor.http.auth.HttpAuthHeader
 
-public fun Auth.api(
+public fun AuthConfig.api(
     token: String,
     sendWithoutRequestCallback: (HttpRequestBuilder) -> Boolean = { true },
     realm: String? = null,

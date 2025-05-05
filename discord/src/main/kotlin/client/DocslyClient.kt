@@ -8,7 +8,6 @@ import dev.triumphteam.docsly.resource.GuildApi
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.resources.Resources
 import io.ktor.client.plugins.resources.get
@@ -16,23 +15,24 @@ import io.ktor.client.plugins.resources.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 
 public class DocslyClient {
 
-    public val client: HttpClient = HttpClient(CIO) {
-        install(Resources)
-        install(ContentNegotiation) { json() }
-        /*install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.BODY
-        }*/
+    public val client: HttpClient by lazy {
+        HttpClient(CIO) {
+            install(Resources)
+            // install(ContentNegotiation) { json() }
+            /*install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.BODY
+            }*/
 
-        defaultRequest {
-            this.host = "localhost"
-            this.port = 8080
+            defaultRequest {
+                this.host = "localhost"
+                this.port = 8080
 
-            contentType(ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
+            }
         }
     }
 

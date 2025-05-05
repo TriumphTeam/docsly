@@ -32,46 +32,68 @@ import org.jetbrains.exposed.sql.statements.jdbc.JdbcPreparedStatementImpl
 import org.jetbrains.exposed.sql.vendors.currentDialect
 import kotlin.reflect.KClass
 
+public fun Table.stringSet(name: String): Column<Set<String>> =
+    registerColumn(name, StringSetColumnType())
+
+public class StringSetColumnType : CollectionColumnType<String, Set<String>>() {
+
+    override fun mapValue(stringValue: String): String? = stringValue
+    override fun mapToString(value: String): String = value
+    override fun List<String>.mapCollection(): Set<String>? = toSet()
+}
+
 public inline fun <reified T : Enum<T>> Table.enumerationSet(name: String): Column<Set<T>> =
     registerColumn(name, EnumSetColumnType(T::class))
 
-public class EnumSetColumnType<T : Enum<T>>(private val klass: KClass<T>) : ColumnType() {
+public class EnumSetColumnType<T : Enum<T>>(private val klass: KClass<T>) : CollectionColumnType<T, Set<T>>() {
 
     // Keep the enum constants for when decoding from the DB
     private val enumConstants by lazy { klass.java.enumConstants.associateBy { it.name.uppercase() } }
 
-    /** The Postgres integer array type. Eg: INTEGER[] */
+    override fun mapValue(stringValue: String): T? = enumConstants[stringValue.uppercase()]
+    override fun mapToString(value: T): String = value.name
+    override fun List<T>.mapCollection(): Set<T>? = toSet()
+}
+
+public abstract class CollectionColumnType<T : Any, C : Collection<T>> : ColumnType<C>() {
+
     override fun sqlType(): String = "${currentDialect.dataTypeProvider.textType()}[]"
 
-    /** When writing the value, it can either be a full on list, or individual values. */
-    override fun notNullValueToDB(value: Any): Any = when (value) {
-        is Collection<*> -> value.filterIsInstance<Enum<*>>().map(Enum<*>::name)
-        is Int -> value
-        is Enum<*> -> value.name
-        else -> error("$value of ${value::class.qualifiedName} is not valid for enum set ${klass.simpleName}")
+    override fun valueFromDB(value: Any): C? {
+        return when (value) {
+            is PGArray -> (value.array as Array<*>).toFilteredCollection()
+            is Set<*> -> value.toFilteredCollection()
+            is Array<*> -> value.toFilteredCollection()
+            is Collection<*> -> value.toFilteredCollection()
+            else -> error("Got unexpected array value of type: ${value::class.qualifiedName} ($value)")
+        }.mapCollection()
     }
 
-    /** When getting the value it can be more than just [PGArray]. */
-    override fun valueFromDB(value: Any): Any = when (value) {
-        is PGArray -> (value.array as Array<*>).toEnumSet()
-        is Array<*> -> value.toEnumSet()
-        is Collection<*> -> value.toEnumSet()
-        else -> error("Got unexpected array value of type: ${value::class.qualifiedName} ($value)")
-    }
+    override fun notNullValueToDB(value: C): Any = value.map(::mapToString)
 
     override fun setParameter(stmt: PreparedStatementApi, index: Int, value: Any?) {
         if (value == null) {
             stmt.setNull(index, this)
-        } else {
-            val preparedStatement = stmt as? JdbcPreparedStatementImpl ?: error("Currently only JDBC is supported")
-            val array = preparedStatement.statement.connection.createArrayOf(
-                currentDialect.dataTypeProvider.integerType(),
-                (value as Collection<*>).toTypedArray()
-            )
-            stmt[index] = array
+            return
         }
+
+        val preparedStatement = requireNotNull(stmt as? JdbcPreparedStatementImpl) {
+            "Currently only JDBC is supported"
+        }
+
+        val array = preparedStatement.statement.connection.createArrayOf(
+            currentDialect.dataTypeProvider.integerType(),
+            (value as Collection<*>).toTypedArray()
+        )
+        stmt[index] = array
     }
 
-    private fun Array<*>.toEnumSet() = filterIsInstance<String>().map { enumConstants[it.uppercase()] }.toSet()
-    private fun Collection<*>.toEnumSet() = filterIsInstance<String>().map { enumConstants[it.uppercase()] }.toSet()
+    protected abstract fun mapValue(stringValue: String): T?
+
+    protected abstract fun mapToString(value: T): String
+
+    protected abstract fun List<T>.mapCollection(): C?
+
+    private fun Collection<*>.toFilteredCollection() = filterIsInstance<String>().mapNotNull(::mapValue)
+    private fun Array<*>.toFilteredCollection() = filterIsInstance<String>().mapNotNull(::mapValue)
 }

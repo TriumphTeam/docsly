@@ -10,5 +10,7 @@ dependencies {
     implementation(libs.bundles.ktor.client)
     implementation(libs.bundles.logger)
     implementation(libs.caffeine)
+
     implementation(libs.kord)
+    implementation(libs.bundles.commands)
 }

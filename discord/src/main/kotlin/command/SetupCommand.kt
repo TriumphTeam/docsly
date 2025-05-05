@@ -1,6 +1,7 @@
 package dev.triumphteam.docsly.kord.command
 
 import dev.kord.core.Kord
+import dev.kord.core.behavior.interaction.respondPublic
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.event.guild.GuildCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
@@ -27,6 +28,9 @@ public class SetupCommand(
 
     private suspend fun GuildChatInputCommandInteractionCreateEvent.onCommand() {
         val defer = interaction.deferPublicResponse()
+        interaction.respondPublic {
+
+        }
 
         val response = docslyClient.setup(interaction.guildId)
 
