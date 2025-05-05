@@ -19,7 +19,7 @@ log4j = "2.20.0"
 
 # Discord
 kord = "0.15.0"
-commands = "2.0.0-ALPHA-13-SNAPSHOT"
+commands = "2.0.0-BETA-2"
 
 # Caching
 caffeine = "3.1.8"
@@ -72,7 +72,9 @@ logger-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.r
 
 # Discord
 kord = { module = "dev.kord:kord-core", version.ref = "kord" }
-commands = { module = "dev.triumphteam:triumph-cmd-kord-slash", version.ref = "commands" }
+commands = { module = "dev.triumphteam:triumph-cmd-kord", version.ref = "commands" }
+commands-coroutines = { module = "dev.triumphteam:triumph-cmd-kotlin-coroutines", version.ref = "commands" }
+commands-extensions = { module = "dev.triumphteam:triumph-cmd-kotlin-extensions", version.ref = "commands" }
 
 # Caching
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
@@ -96,7 +98,7 @@ ktor-server = [
     "ktor-server-resources",
     "ktor-server-negociation",
     "ktor-server-call-logging",
-    "ktor-server-call-logging-jvm"
+    "ktor-server-call-logging-jvm",
 ]
 ktor-client = [
     "ktor-client-core",
@@ -109,19 +111,24 @@ ktor-client = [
 ]
 logger = [
     "logger-core",
-    "logger-impl"
+    "logger-impl",
 ]
 database = [
     "exposed",
     "exposed-dao",
     "exposed-jdbc",
     "hikari",
-    "postgres"
+    "postgres",
+]
+commands = [
+    "commands",
+    "commands-coroutines",
+    "commands-extensions",
 ]
 build = [
     "build-kotlin",
     "build-serialization",
     "build-license",
     "build-dokka",
-    "build-spotless"
+    "build-spotless",
 ]

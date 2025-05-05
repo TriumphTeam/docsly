@@ -103,14 +103,13 @@ public class JsonRenderer(context: DokkaContext) : Renderer, CoroutineScope {
     private val locationProviderFactory =
         context.plugin<DocslyDokkaPlugin>().querySingle { locationProviderFactory }
 
-    // Main json instance for serializing
+    // Main JSON instance for serializing
     private val json = Json {
         explicitNulls = false
     }
 
     override fun render(root: RootPageNode) {
         // TODO: Preprocessors the right way
-
         runBlocking(Dispatchers.Default) {
             renderRoot(root)
         }

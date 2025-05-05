@@ -7,10 +7,12 @@ import dev.kord.common.entity.optional.Optional
 import dev.kord.core.Kord
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.behavior.interaction.suggest
+import dev.kord.core.behavior.interaction.suggestString
 import dev.kord.core.event.guild.GuildCreateEvent
 import dev.kord.core.event.interaction.GuildAutoCompleteInteractionCreateEvent
 import dev.kord.core.event.interaction.GuildChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
+import dev.kord.rest.builder.interaction.integer
 import dev.kord.rest.builder.interaction.string
 import dev.triumphteam.docsly.kord.client.DocslyClient
 import dev.triumphteam.docsly.project.ProjectData
@@ -26,8 +28,8 @@ public class OldSearchCommand(
 
     init {
         kord.on<GuildCreateEvent> {
-            kord.createGuildChatInputCommand(guild.id, "search", "Search for a doc.") {
-                string("project", "The project to search the docs for.") {
+            kord.createGuildChatInputCommand(guild.id, "old-search", "Search for a doc.") {
+                integer("project", "The project to search the docs for.") {
                     required = true
                     autocomplete = true
                 }
@@ -37,7 +39,7 @@ public class OldSearchCommand(
                     autocomplete = true
                 }
 
-                string("version", "The version of the project.") {
+                integer("version", "The version of the project.") {
                     required = false
                     autocomplete = true
                 }
@@ -47,27 +49,33 @@ public class OldSearchCommand(
         kord.on<GuildAutoCompleteInteractionCreateEvent> { onCommandSuggestion() }
 
         kord.on<GuildChatInputCommandInteractionCreateEvent> {
-            if (interaction.command.rootName != "search") return@on
+            if (interaction.command.rootName != "old-search") return@on
             onCommand()
         }
     }
 
     private suspend fun GuildAutoCompleteInteractionCreateEvent.onCommandSuggestion() {
-        if (interaction.command.rootName != "search") return
+        if (interaction.command.rootName != "old-search") return
+        println(interaction.command.options)
 
         val guildId = interaction.guildId
 
-        // Gets a list of projects and their version
+        /*// Gets a list of projects and their version
         val projects = projectsCache.getIfPresent(guildId) ?: docslyClient.getProjects(guildId).also {
             projectsCache.put(guildId, it)
-        }
+        }*/
 
         val focusedOption = interaction.command.options.entries.firstOrNull { it.value.focused }?.key
         val focusedValue = interaction.focusedOption.value
 
         when (focusedOption) {
             "project" -> {
-                val list = projects.map {
+                interaction.suggest(
+                    listOf(
+                        Choice.StringChoice("docsly", Optional.Missing(), "docsly"),
+                    )
+                )
+                /*val list = projects.map {
                     Choice.StringChoice(
                         it.name,
                         Optional.Missing(),
@@ -81,11 +89,11 @@ public class OldSearchCommand(
                     } else {
                         list.filter { it.name.startsWith(focusedValue) }
                     }
-                )
+                )*/
             }
 
             "version" -> {
-                val typedProject = interaction.command.options["project"]?.value as? String
+                /*val typedProject = interaction.command.options["project"]?.value as? String
                 val versions = projects.find { it.name == typedProject }?.versions ?: emptyList()
 
                 val list = versions.map {
@@ -98,18 +106,18 @@ public class OldSearchCommand(
                     } else {
                         list.filter { it.name.startsWith(focusedValue) }
                     }
-                )
+                )*/
             }
 
             "query" -> {
-                val typedProject = interaction.command.options["project"]?.value as? String ?: ""
+                /*val typedProject = interaction.command.options["project"]?.value as? String ?: ""
                 val typedVersion = interaction.command.options["version"]?.value as? String
 
                 val list = docslyClient.search(guildId, typedProject, typedVersion, focusedValue).map { result ->
                     Choice.StringChoice(result.value, Optional.Missing(), result.id.toString())
                 }
 
-                interaction.suggest(list)
+                interaction.suggest(list)*/
             }
         }
     }

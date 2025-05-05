@@ -12,5 +12,5 @@ dependencies {
     implementation(libs.caffeine)
 
     implementation(libs.kord)
-    implementation(libs.commands)
+    implementation(libs.bundles.commands)
 }

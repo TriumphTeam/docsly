@@ -18,7 +18,7 @@ rootProject.name = "docsly"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 plugins {
-    id("dev.triumphteam.root.settings") version "0.0.21"
+    id("dev.triumphteam.root.settings") version "0.0.22"
 }
 
 project(
