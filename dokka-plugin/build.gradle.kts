@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
     api(projects.docslySerializable)
-
     api(libs.dokka.base)
-
     compileOnly(libs.dokka.core)
 }

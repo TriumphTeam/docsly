@@ -2,7 +2,6 @@ import dev.triumphteam.root.repository.Repository
 
 plugins {
     id("docsly.base")
-    id("org.jetbrains.dokka")
     `maven-publish`
     signing
 }
@@ -16,17 +15,17 @@ tasks {
 }
 */
 
-val javadocJar by tasks.registering(Jar::class) {
+/*val javadocJar by tasks.registering(Jar::class) {
     dependsOn(tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
-}
+}*/
 
 root {
     configurePublishing {
         configure {
             artifactId = project.name
             from(components["java"])
-            artifact(javadocJar.get())
+            // artifact(javadocJar.get())
 
             pom {
                 name.set("Docsly Dokka plugin")

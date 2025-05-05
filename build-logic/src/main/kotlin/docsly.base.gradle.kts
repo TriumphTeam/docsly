@@ -5,6 +5,7 @@ import dev.triumphteam.root.repository.applyRepo
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("org.jetbrains.dokka")
     id("com.github.hierynomus.license")
     id("dev.triumphteam.root")
 }
